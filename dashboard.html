@@ -1,151 +1,332 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FUEGO — Scansione</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Raleway:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
-  <link rel="stylesheet" href="dashboard.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FUEGO — Dashboard Operatore</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+        :root {
+            --primary: #ff2e00;
+            --bg: #050507;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #00ff88;
+            --error: #ff4444;
+            --text: #ffffff;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Raleway', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* BACKGROUND EFFECTS */
+        .ambient-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(circle at 10% 10%, rgba(255, 46, 0, 0.12), transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(42, 94, 255, 0.08), transparent 40%);
+        }
+        .noise { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.15; pointer-events: none; z-index: -1; }
+
+        /* TOP BAR */
+        .top-bar {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+        .brand-logo { font-family: 'Oswald'; font-size: 1.8rem; letter-spacing: -1px; }
+        .brand-logo span { color: transparent; -webkit-text-stroke: 1px white; }
+        
+        .btn-logout {
+            display: flex; align-items: center; gap: 8px;
+            color: #888; text-decoration: none; font-size: 0.8rem;
+            text-transform: uppercase; font-weight: 700; transition: 0.3s;
+        }
+        .btn-logout:hover { color: var(--primary); }
+
+        /* MAIN WRAPPER */
+        .container {
+            flex: 1;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header-section { text-align: center; margin-bottom: 40px; }
+        .header-section p { color: var(--primary); text-transform: uppercase; font-weight: 700; letter-spacing: 3px; font-size: 0.7rem; margin-bottom: 10px; }
+        .header-section h1 { font-family: 'Oswald'; font-size: 2.5rem; text-transform: uppercase; }
+
+        /* OPTIONS GRID */
+        .options-grid { display: grid; gap: 20px; }
+
+        .option-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .option-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-5px);
+        }
+        .option-icon {
+            width: 60px; height: 60px;
+            background: rgba(255, 46, 0, 0.1);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+        }
+        .option-info h2 { font-family: 'Oswald'; font-size: 1.4rem; text-transform: uppercase; margin-bottom: 4px; }
+        .option-info p { font-size: 0.85rem; color: #888; line-height: 1.4; }
+
+        /* MODALS */
+        .modal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            display: none; /* Flex via JS */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-content {
+            width: 100%;
+            max-width: 400px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute; top: 20px; right: 20px;
+            cursor: pointer; color: #666;
+        }
+
+        /* SCANNER VIEWPORT */
+        .scanner-container {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #000;
+            border-radius: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+        #qrVideo { width: 100%; height: 100%; object-fit: cover; }
+        .scan-overlay {
+            position: absolute; inset: 0;
+            border: 2px solid var(--primary);
+            margin: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 0 1000px rgba(0,0,0,0.5);
+        }
+        .scan-line {
+            position: absolute; width: 100%; height: 2px;
+            background: var(--primary);
+            top: 0; left: 0;
+            box-shadow: 0 0 15px var(--primary);
+            animation: scan 2s infinite linear;
+        }
+        @keyframes scan { 0% { top: 0% } 100% { top: 100% } }
+
+        /* INPUT STYLING */
+        .input-field {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 18px;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            font-family: 'Oswald';
+            letter-spacing: 2px;
+            margin: 20px 0;
+        }
+        .input-field:focus { outline: none; border-color: var(--primary); }
+
+        .btn-action {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-family: 'Oswald';
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* RESULT POPUP */
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .result-box.ok { background: rgba(0, 255, 136, 0.1); color: var(--success); border: 1px solid var(--success); }
+        .result-box.error { background: rgba(255, 68, 68, 0.1); color: var(--error); border: 1px solid var(--error); }
+
+    </style>
 </head>
 <body>
 
-  <div class="bg-layer"></div>
-  <div class="noise"></div>
+    <div class="ambient-bg"></div>
+    <div class="noise"></div>
 
-  <div class="dash-wrapper">
-
-    <!-- TOP BAR -->
-    <header class="dash-topbar">
-      <div class="dash-brand">
-        <span class="dash-eyebrow">Official Events</span>
-        <span class="dash-logo">FUE<em>GO</em></span>
-      </div>
-      <a href="login.html" class="btn-logout">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M5 2H2.5A1.5 1.5 0 0 0 1 3.5v7A1.5 1.5 0 0 0 2.5 12H5M9 10l3-3-3-3M12 7H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Esci
-      </a>
+    <header class="top-bar">
+        <div class="brand-logo">FUE<span>GO</span></div>
+        <a href="index.html" class="btn-logout">
+            <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+            Esci
+        </a>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="dash-main">
+    <main class="container">
+        <div class="header-section">
+            <p>Staff Control Panel</p>
+            <h1>Scegli Modalità</h1>
+        </div>
 
-      <div class="dash-header">
-        <span class="dash-tag">Pannello Operatore</span>
-        <h1 class="dash-title">Scegli Modalità</h1>
-        <p class="dash-desc">Seleziona come vuoi verificare l'accesso degli ospiti.</p>
-      </div>
+        <div class="options-grid">
+            <div class="option-card" onclick="openModal('modalCamera')">
+                <div class="option-icon">
+                    <span class="material-symbols-outlined" style="font-size: 32px;">qr_code_scanner</span>
+                </div>
+                <div class="option-info">
+                    <h2>Fotocamera</h2>
+                    <p>Scansiona il QR Code del biglietto.</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: #444;">chevron_right</span>
+            </div>
 
-      <!-- OPTION CARDS -->
-      <div class="options-grid">
-
-        <!-- CAMERA / QR -->
-        <button class="option-card" id="btnCamera" type="button">
-          <div class="option-icon">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <!-- Camera body -->
-              <rect x="3" y="9" width="30" height="22" rx="3" stroke="currentColor" stroke-width="1.6"/>
-              <!-- Lens -->
-              <circle cx="18" cy="20" r="6" stroke="currentColor" stroke-width="1.6"/>
-              <circle cx="18" cy="20" r="2.5" fill="currentColor" opacity="0.4"/>
-              <!-- Flash -->
-              <rect x="13" y="5" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.4"/>
-              <!-- Corner indicators -->
-              <path d="M7 13v-2h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              <path d="M29 13v-2h-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="option-body">
-            <span class="option-num">01</span>
-            <h2 class="option-title">Fotocamera<br/>QR Code</h2>
-            <p class="option-desc">Scansiona il QR code del biglietto direttamente con la fotocamera del dispositivo.</p>
-          </div>
-          <div class="option-arrow">→</div>
-        </button>
-
-        <!-- MANUAL CODE -->
-        <button class="option-card" id="btnCode" type="button">
-          <div class="option-icon">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-              <!-- Keyboard / code symbol -->
-              <rect x="3" y="8" width="30" height="20" rx="3" stroke="currentColor" stroke-width="1.6"/>
-              <!-- Keys row 1 -->
-              <rect x="7"  y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
-              <rect x="13" y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
-              <rect x="19" y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
-              <rect x="25" y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
-              <!-- Keys row 2 -->
-              <rect x="7"  y="19" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
-              <rect x="13" y="19" width="10" height="3" rx="0.8" fill="currentColor"/>
-              <rect x="25" y="19" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
-            </svg>
-          </div>
-          <div class="option-body">
-            <span class="option-num">02</span>
-            <h2 class="option-title">Inserimento<br/>Codice</h2>
-            <p class="option-desc">Digita manualmente il codice univoco presente sul biglietto dell'ospite.</p>
-          </div>
-          <div class="option-arrow">→</div>
-        </button>
-
-      </div>
-
+            <div class="option-card" onclick="openModal('modalCode')">
+                <div class="option-icon">
+                    <span class="material-symbols-outlined" style="font-size: 32px;">keyboard</span>
+                </div>
+                <div class="option-info">
+                    <h2>Codice Manuale</h2>
+                    <p>Inserisci il codice FG-XXXX manualmente.</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: #444;">chevron_right</span>
+            </div>
+        </div>
     </main>
 
-    <!-- SCANNER MODAL: QR CAMERA -->
-    <div class="modal-overlay" id="modalCamera" style="display:none">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h2 class="modal-title">Scansione QR</h2>
-          <button class="modal-close" id="closeCamera" type="button">✕</button>
+    <div class="modal" id="modalCamera">
+        <div class="modal-content">
+            <span class="material-symbols-outlined close-btn" onclick="closeModal('modalCamera')">close</span>
+            <h2 style="font-family: 'Oswald';">SCANSIONE QR</h2>
+            <div class="scanner-container">
+                <video id="qrVideo" autoplay playsinline muted></video>
+                <div class="scan-overlay">
+                    <div class="scan-line"></div>
+                </div>
+            </div>
+            <p style="color: #888; font-size: 0.8rem;">Inquadra il codice per verificare</p>
+            <div id="camResult" class="result-box"></div>
         </div>
-        <div class="qr-viewport">
-          <video id="qrVideo" autoplay playsinline muted></video>
-          <div class="qr-frame">
-            <span class="qr-corner tl"></span>
-            <span class="qr-corner tr"></span>
-            <span class="qr-corner bl"></span>
-            <span class="qr-corner br"></span>
-            <div class="qr-scan-line"></div>
-          </div>
-          <p class="qr-hint">Inquadra il QR code del biglietto</p>
-        </div>
-        <div class="scan-result" id="camResult" style="display:none"></div>
-        <button class="btn-submit mt16" id="stopCamera" type="button" style="display:none">
-          <span class="btn-label">Chiudi Fotocamera</span>
-          <span class="btn-arrow">✕</span>
-        </button>
-      </div>
     </div>
 
-    <!-- SCANNER MODAL: MANUAL CODE -->
-    <div class="modal-overlay" id="modalCode" style="display:none">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h2 class="modal-title">Inserisci Codice</h2>
-          <button class="modal-close" id="closeCode" type="button">✕</button>
+    <div class="modal" id="modalCode">
+        <div class="modal-content">
+            <span class="material-symbols-outlined close-btn" onclick="closeModal('modalCode')">close</span>
+            <h2 style="font-family: 'Oswald';">INSERISCI CODICE</h2>
+            <input type="text" id="ticketCode" class="input-field" placeholder="FG-0000" maxlength="10">
+            <button class="btn-action" id="verifyBtn">VERIFICA ACCESSO</button>
+            <div id="codeResult" class="result-box"></div>
         </div>
-        <div class="code-body">
-          <div class="field" id="fl-code">
-            <label for="ticketCode">Codice Biglietto</label>
-            <input type="text" id="ticketCode" placeholder="es. FG-2024-XXXX"
-              autocomplete="off" autocapitalize="characters" spellcheck="false"/>
-            <span class="err">Inserisci un codice valido</span>
-          </div>
-          <button class="btn-submit" id="verifyBtn" type="button">
-            <span class="btn-label">Verifica Accesso</span>
-            <span class="btn-arrow">→</span>
-          </button>
-          <div class="scan-result" id="codeResult" style="display:none"></div>
-        </div>
-      </div>
     </div>
 
-  </div>
+    <script>
+        let videoStream = null;
 
-  <script src="dashboard.js"></script>
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'modalCamera') startCamera();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+            if(id === 'modalCamera') stopCamera();
+            // Reset results
+            document.querySelectorAll('.result-box').forEach(el => el.style.display = 'none');
+        }
+
+        async function startCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" } 
+                });
+                document.getElementById('qrVideo').srcObject = videoStream;
+            } catch (err) {
+                alert("Errore fotocamera: " + err);
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        // Simulazione Verifica
+        document.getElementById('verifyBtn').addEventListener('click', () => {
+            const code = document.getElementById('ticketCode').value.toUpperCase();
+            const res = document.getElementById('codeResult');
+            
+            res.style.display = 'block';
+            if(code.startsWith('FG-') && code.length >= 6) {
+                res.className = "result-box ok";
+                res.innerHTML = "ACCESSO CONSENTITO ✓";
+            } else {
+                res.className = "result-box error";
+                res.innerHTML = "CODICE NON VALIDO ✕";
+            }
+        });
+
+        // Gestione ESC key
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'Escape') {
+                closeModal('modalCamera');
+                closeModal('modalCode');
+            }
+        });
+    </script>
 </body>
 </html>

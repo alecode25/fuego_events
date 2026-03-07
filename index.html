@@ -1,113 +1,371 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FUEGO — Guest List</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Raleway:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FUEGO — Guest List & Access</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary: #ff2e00;
+            --bg: #050507;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --error: #ff4444;
+            --text: #ffffff;
+            --transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Raleway', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .ambient-bg {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 46, 0, 0.15), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(42, 94, 255, 0.1), transparent 40%);
+        }
+        .noise { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.2; pointer-events: none; }
+
+        .scene {
+            width: 100%;
+            max-width: 420px;
+            height: 680px; /* Aumentato leggermente per far stare tutto */
+            perspective: 1500px;
+            padding: 20px;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        .card.is-flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 25px; 
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transform: translateZ(0); 
+        }
+
+        .card-back { transform: rotateY(180deg) translateZ(1px); }
+
+        .brand { text-align: center; margin-bottom: 10px; }
+        .brand h1 { font-family: 'Oswald'; font-size: 3rem; letter-spacing: -2px; text-transform: uppercase; line-height: 1; }
+        .brand h1 span { color: transparent; -webkit-text-stroke: 1px white; }
+        .brand p { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 4px; color: var(--primary); font-weight: 700; }
+
+        .form-title { font-family: 'Oswald'; font-size: 1.4rem; margin-bottom: 10px; text-transform: uppercase; text-align: center; }
+        .field { margin-bottom: 6px; position: relative; }
+        .field label { display: block; font-size: 0.6rem; font-weight: 700; color: #888; text-transform: uppercase; margin: 0 0 4px 5px; }
+        
+        input:not([type="checkbox"]) {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            color: white;
+            font-size: 15px;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        input:focus { outline: none; border-color: var(--primary); background: rgba(255,255,255,0.08); }
+
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .social-box {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 8px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 15px;
+            border: 1px solid var(--border);
+        }
+        .social-box a { color: white; font-size: 1.2rem; transition: 0.3s; }
+        .social-box a:hover { color: var(--primary); transform: translateY(-2px); }
+
+        .privacy-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .privacy-box p { font-size: 0.65rem; color: #aaa; }
+
+        .btn-main {
+            margin-top: auto; 
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-family: 'Oswald';
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(255, 46, 0, 0.2);
+        }
+
+        .footer-link { text-align: center; margin-top: 10px; font-size: 0.75rem; color: #666; cursor: pointer; }
+        .footer-link b { color: var(--primary); }
+
+        .creators { text-align: center; margin-top: 12px; font-size: 0.6rem; color: #444; text-transform: uppercase; letter-spacing: 1px; }
+
+        .has-error input { border-color: var(--error) !important; background: rgba(255, 68, 68, 0.05); }
+        .err-hint { color: var(--error); font-size: 0.6rem; position: absolute; right: 5px; top: 0; display: none; font-weight: 700; }
+
+        .pass-box { position: relative; display: flex; align-items: center; }
+        .eye-toggle { position: absolute; right: 12px; color: #555; cursor: pointer; font-size: 20px; }
+
+        .success-overlay {
+            position: absolute; inset: 0; background: var(--bg); border-radius: 40px;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10; padding: 20px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="bg-layer"></div>
-  <div class="noise"></div>
+    <div class="ambient-bg"></div>
+    <div class="noise"></div>
 
-  <div class="split-layout">
+    <div class="scene">
+        <div class="card" id="mainCard">
+            
+            <div class="card-face card-front" id="regFormView">
+                <div class="brand">
+                    <p>Official Event</p>
+                    <h1>FUE<span>GO</span></h1>
+                </div>
 
-    <!-- LEFT PANEL -->
-    <aside class="panel-left">
-      <div class="brand-block">
-        <span class="brand-eyebrow">Official Events</span>
-        <h1 class="brand-name">FUE<em>GO</em></h1>
-        <p class="brand-line">Il divertimento inizia ora</p>
-      </div>
-      <div class="panel-deco">
-        <div class="circle c1"></div>
-        <div class="circle c2"></div>
-        <div class="lines-deco">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-    </aside>
+                <h2 class="form-title">Guest List</h2>
 
-    <!-- RIGHT PANEL -->
-    <main class="panel-right">
-      <div class="form-container">
+                <div class="row-2">
+                    <div class="field" id="f-nome">
+                        <label>Nome</label>
+                        <input type="text" id="reg-nome" placeholder="Mario">
+                    </div>
+                    <div class="field" id="f-cognome">
+                        <label>Cognome</label>
+                        <input type="text" id="reg-cognome" placeholder="Rossi">
+                    </div>
+                </div>
 
-        <!-- TOP NAV -->
-        <div class="top-nav">
-          <a href="login.html" class="btn-reserved">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="5.5" width="11" height="7" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 5.5V3.5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Area Riservata
-          </a>
-        </div>
+                <div class="field" id="f-telefono">
+                    <label>Telefono</label>
+                    <span class="err-hint" id="tel-err">Errore</span>
+                    <input type="tel" id="reg-telefono" placeholder="+39 333...">
+                </div>
 
-        <div class="form-header">
-          <span class="form-tag">Guest List</span>
-          <h2 class="form-title">Registrati</h2>
-          <p class="form-desc">Compila il modulo per accedere alla lista esclusiva.</p>
-        </div>
+                <div class="field" id="f-email">
+                    <label>Email</label>
+                    <span class="err-hint" id="email-err">Errore</span>
+                    <input type="email" id="reg-email" placeholder="mario@esempio.it">
+                </div>
 
-        <!-- FORM -->
-        <div id="formView">
-          <div class="row-2">
-            <div class="field" id="f-nome">
-              <label for="nome">Nome</label>
-              <input type="text" id="nome" placeholder="Mario" autocomplete="given-name"/>
-              <span class="err">Campo obbligatorio</span>
+               
+
+                <div class="privacy-box">
+                    <input type="checkbox" id="reg-privacy">
+                    <p>Accetto i termini e la Privacy Policy di FUEGO.</p>
+                </div>
+                <div class="social-box">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                </div>
+                <button class="btn-main" id="regSubmitBtn">
+                    <span>ENTRA IN LISTA</span>
+                    <span class="material-symbols-outlined">bolt</span>
+                </button>
+
+                <div class="footer-link" onclick="flipCard()">Area Staff? <b>Accedi ora</b></div>
+                <div class="creators">Creatori: Diego Bucci & Alessandro Olivieri</div>
+
+                <div class="success-overlay" id="regSuccess">
+                    <span class="material-symbols-outlined" style="font-size: 5rem; color: var(--primary);">verified_user</span>
+                    <h2 style="font-family: 'Oswald'; font-size: 2rem;">SEI IN LISTA</h2>
+                </div>
             </div>
-            <div class="field" id="f-cognome">
-              <label for="cognome">Cognome</label>
-              <input type="text" id="cognome" placeholder="Rossi" autocomplete="family-name"/>
-              <span class="err">Campo obbligatorio</span>
+
+            <div class="card-face card-back" id="loginFormView">
+                <div class="brand">
+                    <p>Reserved Area</p>
+                    <h1>FUE<span>GO</span></h1>
+                </div>
+
+                <h2 class="form-title">Accedi</h2>
+
+                <div class="field" id="fl-id">
+                    <label>User ID</label>
+                    <span class="err-hint">Obbligatorio</span>
+                    <input type="text" id="user-id" placeholder="Inserisci ID">
+                </div>
+
+                <div class="field" id="fl-pass">
+                    <label>Password</label>
+                    <span class="err-hint">Obbligatorio</span>
+                    <div class="pass-box">
+                        <input type="password" id="password" placeholder="••••••••">
+                        <span class="material-symbols-outlined eye-toggle" id="togglePass">visibility</span>
+                    </div>
+                </div>
+
+                <button class="btn-main" id="loginBtn">
+                    <span>VERIFICA</span>
+                    <span class="material-symbols-outlined">login</span>
+                </button>
+
+                <div class="footer-link" onclick="flipCard()">Torna alla lista</div>
+                <div class="creators">Creatori: Diego Bucci & Alessandro Olivieri</div>
+
+                <div class="success-overlay" id="loginSuccess">
+                    <span class="material-symbols-outlined" style="font-size: 5rem; color: var(--primary);">key</span>
+                    <h2 style="font-family: 'Oswald'; font-size: 2rem;">ACCESSO OK</h2>
+                </div>
             </div>
-          </div>
-
-          <div class="field" id="f-telefono">
-            <label for="telefono">Numero di Telefono</label>
-            <input type="tel" id="telefono" placeholder="+39 333 000 0000" autocomplete="tel"/>
-            <span class="err" id="tel-err">Campo obbligatorio</span>
-          </div>
-
-          <div class="field" id="f-email">
-            <label for="email">Indirizzo Email</label>
-            <input type="email" id="email" placeholder="mario@esempio.it" autocomplete="email"/>
-            <span class="err" id="email-err">Campo obbligatorio</span>
-          </div>
-
-          <label class="check-row" id="check-wrap" for="privacy">
-            <input type="checkbox" id="privacy"/>
-            <span class="check-box">
-              <svg viewBox="0 0 10 8" fill="none">
-                <path d="M1 4L3.8 7L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="check-text">
-              Ho letto e accetto la <a href="#" onclick="return false">Privacy Policy</a>
-              e l'<a href="#" onclick="return false">Informativa GDPR</a>.
-            </span>
-          </label>
-          <p class="err privacy-err" id="privacy-err">Accetta l'informativa per continuare</p>
-
-          <button class="btn-submit" id="submitBtn" type="button">
-            <span class="btn-label">Entra nella Lista</span>
-            <span class="btn-arrow">→</span>
-          </button>
         </div>
+    </div>
 
-        <!-- SUCCESS -->
-        <div id="successView" class="success-view" style="display:none">
-          <div class="success-badge">✓</div>
-          <h3 class="success-title">Sei dentro.</h3>
-          <p class="success-body">La tua registrazione è confermata.<br/>Ci vediamo in pista.</p>
-        </div>
+    <script>
+    const FuegoApp = (() => {
+        const ui = {
+            card: document.getElementById('mainCard'),
+            reg: {
+                btn: document.getElementById('regSubmitBtn'),
+                nome: document.getElementById('reg-nome'),
+                cognome: document.getElementById('reg-cognome'),
+                tel: document.getElementById('reg-telefono'),
+                email: document.getElementById('reg-email'),
+                privacy: document.getElementById('reg-privacy'),
+                success: document.getElementById('regSuccess'),
+                privacyBox: document.querySelector('.privacy-box')
+            },
+            login: {
+                btn: document.getElementById('loginBtn'),
+                id: document.getElementById('user-id'),
+                pass: document.getElementById('password'),
+                togglePass: document.getElementById('togglePass'),
+                success: document.getElementById('loginSuccess')
+            }
+        };
 
-      </div>
-    </main>
+        const validate = {
+            email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+            phone: (v) => /^[\d\s\+\-\(\)]{7,}$/.test(v),
+            empty: (v) => v.trim().length > 0
+        };
 
-  </div>
+        const toggleError = (elementId, show, msgId = null) => {
+            const wrap = document.getElementById(elementId);
+            if (!wrap) return;
+            if (show) {
+                wrap.classList.add('has-error');
+                const hint = wrap.querySelector('.err-hint');
+                if(hint) hint.style.display = 'block';
+            } else {
+                wrap.classList.remove('has-error');
+                const hint = wrap.querySelector('.err-hint');
+                if(hint) hint.style.display = 'none';
+            }
+        };
 
-  <script src="script.js"></script>
+        return {
+            init: () => {
+                window.flipCard = () => ui.card.classList.toggle('is-flipped');
+
+                ui.login.togglePass.addEventListener('click', () => {
+                    const isPass = ui.login.pass.type === 'password';
+                    ui.login.pass.type = isPass ? 'text' : 'password';
+                    ui.login.togglePass.textContent = isPass ? 'visibility_off' : 'visibility';
+                });
+
+                ui.reg.btn.addEventListener('click', () => {
+                    let isValid = true;
+                    if (!validate.empty(ui.reg.nome.value)) { toggleError('f-nome', true); isValid = false; } else toggleError('f-nome', false);
+                    if (!validate.empty(ui.reg.cognome.value)) { toggleError('f-cognome', true); isValid = false; } else toggleError('f-cognome', false);
+                    if (!validate.phone(ui.reg.tel.value)) { toggleError('f-telefono', true); isValid = false; } else toggleError('f-telefono', false);
+                    if (!validate.email(ui.reg.email.value)) { toggleError('f-email', true); isValid = false; } else toggleError('f-email', false);
+
+                    if (!ui.reg.privacy.checked) {
+                        ui.reg.privacyBox.style.borderColor = 'var(--error)';
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        ui.reg.btn.innerHTML = "<span>INVIO...</span>";
+                        setTimeout(() => ui.reg.success.style.display = 'flex', 1000);
+                    }
+                });
+
+                ui.login.btn.addEventListener('click', () => {
+                    let isValidLogin = true;
+                    if (!validate.empty(ui.login.id.value)) { toggleError('fl-id', true); isValidLogin = false; } else toggleError('fl-id', false);
+                    if (!validate.empty(ui.login.pass.value)) { toggleError('fl-pass', true); isValidLogin = false; } else toggleError('fl-pass', false);
+
+                    if (isValidLogin) {
+                        ui.login.btn.innerHTML = "<span>VERIFICA...</span>";
+                        setTimeout(() => ui.login.success.style.display = 'flex', 1000);
+                    }
+                });
+
+                document.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const parent = e.target.closest('.field');
+                        if (parent) {
+                            parent.classList.remove('has-error');
+                            const hint = parent.querySelector('.err-hint');
+                            if(hint) hint.style.display = 'none';
+                        }
+                        if (e.target.id === 'reg-privacy') ui.reg.privacyBox.style.borderColor = 'var(--border)';
+                    });
+                });
+            }
+        };
+    })();
+
+    document.addEventListener('DOMContentLoaded', FuegoApp.init);
+    </script>
 </body>
 </html>
