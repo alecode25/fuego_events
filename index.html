@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FUEGO — Guest List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Raleway:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="bg-layer"></div>
+  <div class="noise"></div>
+
+  <div class="split-layout">
+
+    <!-- LEFT PANEL -->
+    <aside class="panel-left">
+      <div class="brand-block">
+        <span class="brand-eyebrow">Official Events</span>
+        <h1 class="brand-name">FUEGO</h1>
+        <p class="brand-line">The night begins here.</p>
+      </div>
+      <div class="panel-deco">
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+        <div class="lines-deco">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="panel-footer-txt">Milano · Roma · Ibiza</div>
+    </aside>
+
+    <!-- RIGHT PANEL -->
+    <main class="panel-right">
+      <div class="form-container">
+
+        <div class="form-header">
+          <span class="form-tag">Guest List</span>
+          <h2 class="form-title">Registrati</h2>
+          <p class="form-desc">Compila il modulo per accedere alla lista esclusiva.</p>
+        </div>
+
+        <!-- FORM -->
+        <div id="formView">
+          <div class="row-2">
+            <div class="field" id="f-nome">
+              <label for="nome">Nome</label>
+              <input type="text" id="nome" placeholder="Mario" autocomplete="given-name"/>
+              <span class="err">Campo obbligatorio</span>
+            </div>
+            <div class="field" id="f-cognome">
+              <label for="cognome">Cognome</label>
+              <input type="text" id="cognome" placeholder="Rossi" autocomplete="family-name"/>
+              <span class="err">Campo obbligatorio</span>
+            </div>
+          </div>
+
+          <div class="field" id="f-telefono">
+            <label for="telefono">Numero di Telefono</label>
+            <input type="tel" id="telefono" placeholder="+39 333 000 0000" autocomplete="tel"/>
+            <span class="err" id="tel-err">Campo obbligatorio</span>
+          </div>
+
+          <div class="field" id="f-email">
+            <label for="email">Indirizzo Email</label>
+            <input type="email" id="email" placeholder="mario@esempio.it" autocomplete="email"/>
+            <span class="err" id="email-err">Campo obbligatorio</span>
+          </div>
+
+          <label class="check-row" id="check-wrap" for="privacy">
+            <input type="checkbox" id="privacy"/>
+            <span class="check-box">
+              <svg viewBox="0 0 10 8" fill="none">
+                <path d="M1 4L3.8 7L9 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="check-text">
+              Ho letto e accetto la <a href="#" onclick="return false">Privacy Policy</a>
+              e l'<a href="#" onclick="return false">Informativa GDPR</a>.
+            </span>
+          </label>
+          <p class="err privacy-err" id="privacy-err">Accetta l'informativa per continuare</p>
+
+          <button class="btn-submit" id="submitBtn" type="button">
+            <span class="btn-label">Entra nella Lista</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+
+        <!-- SUCCESS -->
+        <div id="successView" class="success-view" style="display:none">
+          <div class="success-badge">✓</div>
+          <h3 class="success-title">Sei dentro.</h3>
+          <p class="success-body">La tua registrazione è confermata.<br/>Ci vediamo in pista.</p>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
