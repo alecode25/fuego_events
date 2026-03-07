@@ -17,6 +17,7 @@
             --border: rgba(255, 255, 255, 0.08);
             --success: #00ff88;
             --error: #ff4444;
+            --warn: #ffaa00;
             --text: #ffffff;
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -33,7 +34,6 @@
             overflow-x: hidden;
         }
 
-        /* BACKGROUND EFFECTS */
         .ambient-bg {
             position: fixed; inset: 0; z-index: -1;
             background: 
@@ -42,7 +42,6 @@
         }
         .noise { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.15; pointer-events: none; z-index: -1; }
 
-        /* TOP BAR */
         .top-bar {
             padding: 20px 30px;
             display: flex;
@@ -54,14 +53,24 @@
         .brand-logo { font-family: 'Oswald'; font-size: 1.8rem; letter-spacing: -1px; }
         .brand-logo span { color: transparent; -webkit-text-stroke: 1px white; }
         
+        .top-bar-right { display: flex; align-items: center; gap: 16px; }
+        .operator-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .operator-badge b { color: var(--primary); }
+
         .btn-logout {
             display: flex; align-items: center; gap: 8px;
             color: #888; text-decoration: none; font-size: 0.8rem;
             text-transform: uppercase; font-weight: 700; transition: 0.3s;
+            cursor: pointer; background: none; border: none;
         }
         .btn-logout:hover { color: var(--primary); }
 
-        /* MAIN WRAPPER */
         .container {
             flex: 1;
             max-width: 600px;
@@ -74,7 +83,6 @@
         .header-section p { color: var(--primary); text-transform: uppercase; font-weight: 700; letter-spacing: 3px; font-size: 0.7rem; margin-bottom: 10px; }
         .header-section h1 { font-family: 'Oswald'; font-size: 2.5rem; text-transform: uppercase; }
 
-        /* OPTIONS GRID */
         .options-grid { display: grid; gap: 20px; }
 
         .option-card {
@@ -102,6 +110,7 @@
             border-radius: 20px;
             display: flex; align-items: center; justify-content: center;
             color: var(--primary);
+            flex-shrink: 0;
         }
         .option-info h2 { font-family: 'Oswald'; font-size: 1.4rem; text-transform: uppercase; margin-bottom: 4px; }
         .option-info p { font-size: 0.85rem; color: #888; line-height: 1.4; }
@@ -112,7 +121,7 @@
             background: rgba(0,0,0,0.9);
             backdrop-filter: blur(20px);
             z-index: 100;
-            display: none; /* Flex via JS */
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -121,19 +130,24 @@
         .modal-content {
             width: 100%;
             max-width: 400px;
-            background: var(--glass);
+            background: rgba(10,8,10,0.98);
             border: 1px solid var(--border);
             border-radius: 40px;
             padding: 40px 30px;
             text-align: center;
             position: relative;
         }
+        .modal-title { font-family: 'Oswald'; font-size: 1.6rem; text-transform: uppercase; margin-bottom: 4px; }
+        .modal-sub { font-size: 0.75rem; color: #666; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+
         .close-btn {
             position: absolute; top: 20px; right: 20px;
             cursor: pointer; color: #666;
+            transition: color 0.2s;
         }
+        .close-btn:hover { color: #fff; }
 
-        /* SCANNER VIEWPORT */
+        /* SCANNER */
         .scanner-container {
             width: 100%;
             aspect-ratio: 1;
@@ -161,7 +175,7 @@
         }
         @keyframes scan { 0% { top: 0% } 100% { top: 100% } }
 
-        /* INPUT STYLING */
+        /* INPUT */
         .input-field {
             width: 100%;
             background: rgba(255,255,255,0.05);
@@ -169,13 +183,17 @@
             border-radius: 15px;
             padding: 18px;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             text-align: center;
             font-family: 'Oswald';
-            letter-spacing: 2px;
+            letter-spacing: 4px;
             margin: 20px 0;
+            outline: none;
+            transition: border-color 0.2s;
+            text-transform: uppercase;
         }
-        .input-field:focus { outline: none; border-color: var(--primary); }
+        .input-field:focus { border-color: var(--primary); }
+        .input-field::placeholder { color: #333; font-size: 1rem; letter-spacing: 2px; }
 
         .btn-action {
             width: 100%;
@@ -187,10 +205,16 @@
             font-family: 'Oswald';
             font-size: 1.1rem;
             cursor: pointer;
-            transition: 0.3s;
+            transition: opacity 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        /* RESULT POPUP */
+        /* RESULT */
         .result-box {
             display: none;
             margin-top: 20px;
@@ -198,10 +222,39 @@
             border-radius: 15px;
             font-weight: 700;
             text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            line-height: 1.6;
         }
-        .result-box.ok { background: rgba(0, 255, 136, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .result-box.error { background: rgba(255, 68, 68, 0.1); color: var(--error); border: 1px solid var(--error); }
+        .result-box .result-name {
+            font-size: 0.75rem;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+            opacity: 0.8;
+            margin-top: 6px;
+            font-family: 'Raleway';
+        }
+        .result-box.ok   { background: rgba(0,255,136,0.08); color: var(--success); border: 1px solid var(--success); }
+        .result-box.err  { background: rgba(255,68,68,0.08);  color: var(--error);   border: 1px solid var(--error); }
+        .result-box.warn { background: rgba(255,170,0,0.08);  color: var(--warn);    border: 1px solid var(--warn); }
 
+        /* GUARD overlay */
+        .guard-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: var(--bg);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            text-align: center;
+            padding: 20px;
+        }
+        .guard-overlay.show { display: flex; }
+        .guard-overlay h2 { font-family: 'Oswald'; font-size: 2rem; color: var(--primary); }
+        .guard-overlay p  { color: #666; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -209,12 +262,23 @@
     <div class="ambient-bg"></div>
     <div class="noise"></div>
 
+    <!-- GUARD: mostrato se non autenticato -->
+    <div class="guard-overlay" id="guardOverlay">
+        <span class="material-symbols-outlined" style="font-size: 4rem; color: var(--primary);">lock</span>
+        <h2>Accesso Negato</h2>
+        <p>Devi effettuare il login per accedere a questa pagina.</p>
+        <a href="index.html" style="color: var(--primary); font-weight: 700; font-size: 0.9rem;">→ Vai al Login</a>
+    </div>
+
     <header class="top-bar">
         <div class="brand-logo">FUE<span>GO</span></div>
-        <a href="index.html" class="btn-logout">
-            <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
-            Esci
-        </a>
+        <div class="top-bar-right">
+            <span class="operator-badge" id="operatorBadge"></span>
+            <button class="btn-logout" id="logoutBtn">
+                <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+                Esci
+            </button>
+        </div>
     </header>
 
     <main class="container">
@@ -241,92 +305,212 @@
                 </div>
                 <div class="option-info">
                     <h2>Codice Manuale</h2>
-                    <p>Inserisci il codice FG-XXXX manualmente.</p>
+                    <p>Inserisci il codice FG-XXXXXX manualmente.</p>
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: #444;">chevron_right</span>
             </div>
         </div>
     </main>
 
+    <!-- MODAL: FOTOCAMERA -->
     <div class="modal" id="modalCamera">
         <div class="modal-content">
             <span class="material-symbols-outlined close-btn" onclick="closeModal('modalCamera')">close</span>
-            <h2 style="font-family: 'Oswald';">SCANSIONE QR</h2>
+            <div class="modal-title">Scansione QR</div>
+            <div class="modal-sub">Inquadra il biglietto</div>
             <div class="scanner-container">
                 <video id="qrVideo" autoplay playsinline muted></video>
                 <div class="scan-overlay">
                     <div class="scan-line"></div>
                 </div>
             </div>
-            <p style="color: #888; font-size: 0.8rem;">Inquadra il codice per verificare</p>
             <div id="camResult" class="result-box"></div>
         </div>
     </div>
 
+    <!-- MODAL: CODICE MANUALE -->
     <div class="modal" id="modalCode">
         <div class="modal-content">
             <span class="material-symbols-outlined close-btn" onclick="closeModal('modalCode')">close</span>
-            <h2 style="font-family: 'Oswald';">INSERISCI CODICE</h2>
-            <input type="text" id="ticketCode" class="input-field" placeholder="FG-0000" maxlength="10">
-            <button class="btn-action" id="verifyBtn">VERIFICA ACCESSO</button>
+            <div class="modal-title">Inserisci Codice</div>
+            <div class="modal-sub">Digita il codice del biglietto</div>
+            <input type="text" id="ticketCode" class="input-field"
+                placeholder="FG-XXXXXX" maxlength="9"
+                autocomplete="off" autocapitalize="characters" spellcheck="false">
+            <button class="btn-action" id="verifyBtn">
+                <span class="material-symbols-outlined">verified</span>
+                VERIFICA ACCESSO
+            </button>
             <div id="codeResult" class="result-box"></div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        let videoStream = null;
+    // =============================================
+    // SUPABASE
+    // =============================================
+    const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-            if(id === 'modalCamera') startCamera();
+    // =============================================
+    // GUARD: verifica sessione
+    // =============================================
+    const session = JSON.parse(sessionStorage.getItem('fuego_session') || 'null');
+
+    if (!session || Date.now() > session.expiresAt) {
+        sessionStorage.removeItem('fuego_session');
+        document.getElementById('guardOverlay').classList.add('show');
+    } else {
+        document.getElementById('operatorBadge').innerHTML = 'Operatore: <b>' + session.userId + '</b>';
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        sessionStorage.removeItem('fuego_session');
+        window.location.href = 'index.html';
+    });
+
+    // =============================================
+    // VERIFICA BIGLIETTO SU SUPABASE
+    // =============================================
+    async function verificaBiglietto(codice, resultEl) {
+        codice = codice.trim().toUpperCase();
+
+        if (!codice || codice.length < 6) {
+            mostraRisultato(resultEl, 'err', '✕ Codice troppo corto');
+            return;
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-            if(id === 'modalCamera') stopCamera();
-            // Reset results
-            document.querySelectorAll('.result-box').forEach(el => el.style.display = 'none');
+        resultEl.className = 'result-box';
+        resultEl.style.display = 'block';
+        resultEl.innerHTML = '⏳ Verifica in corso...';
+
+        // 1. Cerca il ticket
+        const { data: ticket, error } = await db
+            .from('ticket')
+            .select('id, stato, codice, utente_id, utenti(nome, cognome)')
+            .eq('codice', codice)
+            .maybeSingle();
+
+        if (error) {
+            mostraRisultato(resultEl, 'err', '✕ Errore di rete');
+            return;
         }
 
-        async function startCamera() {
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "environment" } 
-                });
-                document.getElementById('qrVideo').srcObject = videoStream;
-            } catch (err) {
-                alert("Errore fotocamera: " + err);
-            }
+        if (!ticket) {
+            mostraRisultato(resultEl, 'err', '✕ Codice non trovato');
+            return;
         }
 
-        function stopCamera() {
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-            }
+        // 2. Già usato?
+        if (ticket.stato === 'usato') {
+            const nome = ticket.utenti ? ticket.utenti.nome + ' ' + ticket.utenti.cognome : '';
+            mostraRisultato(resultEl, 'warn',
+                '⚠ Biglietto già utilizzato' +
+                (nome ? '<div class="result-name">Intestato a: ' + nome + '</div>' : '')
+            );
+            return;
         }
 
-        // Simulazione Verifica
-        document.getElementById('verifyBtn').addEventListener('click', () => {
-            const code = document.getElementById('ticketCode').value.toUpperCase();
-            const res = document.getElementById('codeResult');
-            
-            res.style.display = 'block';
-            if(code.startsWith('FG-') && code.length >= 6) {
-                res.className = "result-box ok";
-                res.innerHTML = "ACCESSO CONSENTITO ✓";
-            } else {
-                res.className = "result-box error";
-                res.innerHTML = "CODICE NON VALIDO ✕";
-            }
-        });
+        // 3. Annullato?
+        if (ticket.stato === 'annullato') {
+            mostraRisultato(resultEl, 'err', '✕ Biglietto annullato');
+            return;
+        }
 
-        // Gestione ESC key
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'Escape') {
-                closeModal('modalCamera');
-                closeModal('modalCode');
-            }
-        });
+        // 4. Valido → marca come usato
+        const { error: updateErr } = await db
+            .from('ticket')
+            .update({
+                stato: 'usato',
+                scansionato_at: new Date().toISOString()
+            })
+            .eq('id', ticket.id);
+
+        if (updateErr) {
+            mostraRisultato(resultEl, 'err', '✕ Errore aggiornamento');
+            return;
+        }
+
+        const nome = ticket.utenti ? ticket.utenti.nome + ' ' + ticket.utenti.cognome : '';
+        mostraRisultato(resultEl, 'ok',
+            '✓ Accesso Consentito' +
+            (nome ? '<div class="result-name">Benvenuto/a, ' + nome + '</div>' : '')
+        );
+    }
+
+    function mostraRisultato(el, tipo, html) {
+        el.className = 'result-box ' + tipo;
+        el.innerHTML = html;
+        el.style.display = 'block';
+    }
+
+    // =============================================
+    // MODAL
+    // =============================================
+    let videoStream = null;
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+        document.getElementById('codeResult').style.display = 'none';
+        document.getElementById('camResult').style.display = 'none';
+        if (id === 'modalCamera') startCamera();
+        if (id === 'modalCode') {
+            document.getElementById('ticketCode').value = '';
+            setTimeout(() => document.getElementById('ticketCode').focus(), 100);
+        }
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        if (id === 'modalCamera') stopCamera();
+    }
+
+    async function startCamera() {
+        try {
+            videoStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: 'environment' } }
+            });
+            document.getElementById('qrVideo').srcObject = videoStream;
+        } catch (err) {
+            mostraRisultato(document.getElementById('camResult'), 'err', '✕ Fotocamera non disponibile');
+        }
+    }
+
+    function stopCamera() {
+        if (videoStream) {
+            videoStream.getTracks().forEach(t => t.stop());
+            videoStream = null;
+        }
+    }
+
+    // =============================================
+    // VERIFICA CODICE MANUALE
+    // =============================================
+    document.getElementById('verifyBtn').addEventListener('click', () => {
+        const codice = document.getElementById('ticketCode').value;
+        verificaBiglietto(codice, document.getElementById('codeResult'));
+    });
+
+    document.getElementById('ticketCode').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('verifyBtn').click();
+    });
+
+    // Auto uppercase e formato FG-
+    document.getElementById('ticketCode').addEventListener('input', (e) => {
+        let v = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+        e.target.value = v;
+        document.getElementById('codeResult').style.display = 'none';
+    });
+
+    // ESC chiude i modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal('modalCamera');
+            closeModal('modalCode');
+        }
+    });
     </script>
 </body>
 </html>

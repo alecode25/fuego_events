@@ -36,16 +36,24 @@
 
         .ambient-bg {
             position: fixed; inset: 0; z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(255, 46, 0, 0.15), transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(42, 94, 255, 0.1), transparent 40%);
+            background-image: url('main.jpg');
+            background-size: cover;
+            background-position: center 88%;
+        }
+        .ambient-bg::after {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255, 46, 0, 0.18), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(10,5,5,0.85), transparent 60%),
+                linear-gradient(135deg, rgba(5,3,4,0.82) 0%, rgba(9,5,6,0.70) 100%);
         }
         .noise { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.2; pointer-events: none; }
 
         .scene {
             width: 100%;
             max-width: 420px;
-            height: 90vh; /* Altezza flessibile basata sullo schermo */
+            height: 90vh;
             max-height: 700px;
             perspective: 1500px;
             padding: 15px;
@@ -71,19 +79,16 @@
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--border);
             border-radius: 40px;
-            padding: 25px; 
+            padding: 25px;
             display: flex;
             flex-direction: column;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             transform: translateZ(0);
-            /* ABILITA SCROLL SE IL CONTENUTO È TROPPO LUNGO */
             overflow-y: auto;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        
-        .card-face::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-
+        .card-face::-webkit-scrollbar { display: none; }
         .card-back { transform: rotateY(180deg) translateZ(1px); }
 
         .brand { text-align: center; margin-bottom: 15px; flex-shrink: 0; }
@@ -104,7 +109,10 @@
             color: white;
             font-size: 15px;
             font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
         }
+        input:not([type="checkbox"]):focus { border-color: rgba(255,46,0,0.5); }
 
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
@@ -119,6 +127,7 @@
             border: 1px solid var(--border);
         }
         .social-box a { color: white; font-size: 1.3rem; transition: 0.3s; }
+        .social-box a:hover { color: var(--primary); }
 
         .privacy-box {
             display: flex;
@@ -129,6 +138,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
             border-radius: 12px;
+            transition: border-color 0.2s;
         }
         .privacy-box p { font-size: 0.65rem; color: #aaa; }
 
@@ -148,32 +158,62 @@
             align-items: center;
             flex-shrink: 0;
             margin-bottom: 10px;
+            transition: opacity 0.2s, transform 0.15s;
         }
+        .btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-main:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .footer-link { text-align: center; padding: 5px; font-size: 0.8rem; color: #666; cursor: pointer; }
+        .footer-link:hover { color: #aaa; }
         .creators { text-align: center; margin-top: 15px; padding-bottom: 10px; font-size: 0.6rem; color: #444; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
 
-        .has-error input { border-color: var(--error) !important; background: rgba(255, 68, 68, 0.05); }
+        .has-error input { border-color: var(--error) !important; background: rgba(255, 68, 68, 0.05) !important; }
         .err-hint { color: var(--error); font-size: 0.6rem; position: absolute; right: 5px; top: 0; display: none; font-weight: 700; }
 
         .pass-box { position: relative; display: flex; align-items: center; }
-        .eye-toggle { position: absolute; right: 12px; color: #555; cursor: pointer; font-size: 20px; }
+        .eye-toggle { position: absolute; right: 12px; color: #555; cursor: pointer; font-size: 20px; user-select: none; }
 
         .success-overlay {
-            position: absolute; inset: 0; background: var(--bg); border-radius: 40px;
+            position: absolute; inset: 0; background: rgba(5,5,7,0.97); border-radius: 40px;
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10; padding: 20px;
+            z-index: 10; padding: 20px; gap: 10px; text-align: center;
         }
+        .success-overlay h2 { font-family: 'Oswald'; font-size: 2rem; }
+        .success-overlay p  { font-size: 0.85rem; color: #aaa; line-height: 1.6; }
+
+        /* Toast notifica */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(20,15,15,0.95);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 0.8rem;
+            color: #fff;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 999;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.ok   { border-color: #1db954; color: #1db954; }
+        .toast.err  { border-color: var(--error); color: var(--error); }
     </style>
 </head>
 <body>
 
     <div class="ambient-bg"></div>
     <div class="noise"></div>
+    <div class="toast" id="toast"></div>
 
     <div class="scene">
         <div class="card" id="mainCard">
             
+            <!-- FRONT: REGISTRAZIONE -->
             <div class="card-face card-front">
                 <div class="brand">
                     <p>Official Event</p>
@@ -184,38 +224,35 @@
 
                 <div class="row-2">
                     <div class="field" id="f-nome">
-                        <label>Nome</label>
-                        <input type="text" id="reg-nome" placeholder="Mario">
+                        <label>Nome <span class="err-hint">Richiesto</span></label>
+                        <input type="text" id="reg-nome" placeholder="Mario" autocomplete="given-name">
                     </div>
                     <div class="field" id="f-cognome">
-                        <label>Cognome</label>
-                        <input type="text" id="reg-cognome" placeholder="Rossi">
+                        <label>Cognome <span class="err-hint">Richiesto</span></label>
+                        <input type="text" id="reg-cognome" placeholder="Rossi" autocomplete="family-name">
                     </div>
                 </div>
 
                 <div class="field" id="f-telefono">
-                    <label>Telefono</label>
-                    <span class="err-hint">Errore</span>
-                    <input type="tel" id="reg-telefono" placeholder="+39 333...">
+                    <label>Telefono <span class="err-hint">Numero non valido</span></label>
+                    <input type="tel" id="reg-telefono" placeholder="+39 333..." autocomplete="tel">
                 </div>
 
                 <div class="field" id="f-email">
-                    <label>Email</label>
-                    <span class="err-hint">Errore</span>
-                    <input type="email" id="reg-email" placeholder="mario@esempio.it">
+                    <label>Email <span class="err-hint">Email non valida</span></label>
+                    <input type="email" id="reg-email" placeholder="mario@esempio.it" autocomplete="email">
                 </div>
 
-                
-
-                <div class="privacy-box">
+                <div class="privacy-box" id="privacy-box">
                     <input type="checkbox" id="reg-privacy">
                     <p>Accetto i termini e la Privacy Policy di FUEGO.</p>
                 </div>
+
                 <div class="social-box">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-tiktok"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/fuego_official_events/"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@staff_fuego_?is_from_webapp=1&sender_device=pc"><i class="fab fa-tiktok"></i></a>
                 </div>
+
                 <button class="btn-main" id="regSubmitBtn">
                     <span>ENTRA IN LISTA</span>
                     <span class="material-symbols-outlined">bolt</span>
@@ -226,10 +263,12 @@
 
                 <div class="success-overlay" id="regSuccess">
                     <span class="material-symbols-outlined" style="font-size: 5rem; color: var(--primary);">verified_user</span>
-                    <h2 style="font-family: 'Oswald'; font-size: 2rem;">SEI IN LISTA</h2>
+                    <h2>SEI IN LISTA</h2>
+                    <p>Registrazione completata.<br>Controlla la tua email per il biglietto.</p>
                 </div>
             </div>
 
+            <!-- BACK: LOGIN STAFF -->
             <div class="card-face card-back">
                 <div class="brand">
                     <p>Reserved Area</p>
@@ -239,21 +278,21 @@
                 <h2 class="form-title">Accedi</h2>
 
                 <div class="field" id="fl-id">
-                    <label>User ID</label>
-                    <span class="err-hint">Richiesto</span>
-                    <input type="text" id="user-id" placeholder="ID Personale">
+                    <label>User ID <span class="err-hint">Richiesto</span></label>
+                    <input type="text" id="user-id" placeholder="ID Personale" autocomplete="username" autocapitalize="none">
                 </div>
 
                 <div class="field" id="fl-pass">
-                    <label>Password</label>
-                    <span class="err-hint">Richiesto</span>
+                    <label>Password <span class="err-hint">Richiesto</span></label>
                     <div class="pass-box">
-                        <input type="password" id="password" placeholder="••••••••">
+                        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
                         <span class="material-symbols-outlined eye-toggle" id="togglePass">visibility</span>
                     </div>
                 </div>
 
-                <div style="margin-top: 20px;"></div> <button class="btn-main" id="loginBtn">
+                <div style="margin-top: 20px;"></div>
+
+                <button class="btn-main" id="loginBtn">
                     <span>VERIFICA</span>
                     <span class="material-symbols-outlined">login</span>
                 </button>
@@ -263,101 +302,16 @@
 
                 <div class="success-overlay" id="loginSuccess">
                     <span class="material-symbols-outlined" style="font-size: 5rem; color: var(--primary);">key</span>
-                    <h2 style="font-family: 'Oswald'; font-size: 2rem;">ACCESSO OK</h2>
+                    <h2>ACCESSO OK</h2>
+                    <p>Reindirizzamento in corso...</p>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <script>
-    const FuegoApp = (() => {
-        const ui = {
-            card: document.getElementById('mainCard'),
-            reg: {
-                btn: document.getElementById('regSubmitBtn'),
-                nome: document.getElementById('reg-nome'),
-                cognome: document.getElementById('reg-cognome'),
-                tel: document.getElementById('reg-telefono'),
-                email: document.getElementById('reg-email'),
-                privacy: document.getElementById('reg-privacy'),
-                success: document.getElementById('regSuccess'),
-                privacyBox: document.querySelector('.privacy-box')
-            },
-            login: {
-                btn: document.getElementById('loginBtn'),
-                id: document.getElementById('user-id'),
-                pass: document.getElementById('password'),
-                togglePass: document.getElementById('togglePass'),
-                success: document.getElementById('loginSuccess')
-            }
-        };
-
-        const validate = {
-            email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
-            phone: (v) => /^[\d\s\+\-\(\)]{7,}$/.test(v),
-            empty: (v) => v.trim().length > 0
-        };
-
-        const toggleError = (elementId, show) => {
-            const wrap = document.getElementById(elementId);
-            if (!wrap) return;
-            wrap.classList.toggle('has-error', show);
-            const hint = wrap.querySelector('.err-hint');
-            if(hint) hint.style.display = show ? 'block' : 'none';
-        };
-
-        return {
-            init: () => {
-                window.flipCard = () => ui.card.classList.toggle('is-flipped');
-
-                ui.login.togglePass.addEventListener('click', () => {
-                    const isPass = ui.login.pass.type === 'password';
-                    ui.login.pass.type = isPass ? 'text' : 'password';
-                    ui.login.togglePass.textContent = isPass ? 'visibility_off' : 'visibility';
-                });
-
-                ui.reg.btn.addEventListener('click', () => {
-                    let ok = true;
-                    if (!validate.empty(ui.reg.nome.value)) { toggleError('f-nome', true); ok = false; } else toggleError('f-nome', false);
-                    if (!validate.empty(ui.reg.cognome.value)) { toggleError('f-cognome', true); ok = false; } else toggleError('f-cognome', false);
-                    if (!validate.phone(ui.reg.tel.value)) { toggleError('f-telefono', true); ok = false; } else toggleError('f-telefono', false);
-                    if (!validate.email(ui.reg.email.value)) { toggleError('f-email', true); ok = false; } else toggleError('f-email', false);
-                    if (!ui.reg.privacy.checked) { ui.reg.privacyBox.style.borderColor = 'var(--error)'; ok = false; } 
-                    else { ui.reg.privacyBox.style.borderColor = 'var(--border)'; }
-
-                    if (ok) {
-                        ui.reg.btn.innerHTML = "<span>INVIO...</span>";
-                        setTimeout(() => ui.reg.success.style.display = 'flex', 1000);
-                    }
-                });
-
-                ui.login.btn.addEventListener('click', () => {
-                    let ok = true;
-                    if (!validate.empty(ui.login.id.value)) { toggleError('fl-id', true); ok = false; } else toggleError('fl-id', false);
-                    if (!validate.empty(ui.login.pass.value)) { toggleError('fl-pass', true); ok = false; } else toggleError('fl-pass', false);
-
-                    if (ok) {
-                        ui.login.btn.innerHTML = "<span>VERIFICA...</span>";
-                        setTimeout(() => ui.login.success.style.display = 'flex', 1000);
-                    }
-                });
-
-                document.querySelectorAll('input').forEach(input => {
-                    input.addEventListener('input', (e) => {
-                        const parent = e.target.closest('.field');
-                        if (parent) {
-                            parent.classList.remove('has-error');
-                            const hint = parent.querySelector('.err-hint');
-                            if(hint) hint.style.display = 'none';
-                        }
-                        if (e.target.id === 'reg-privacy') ui.reg.privacyBox.style.borderColor = 'var(--border)';
-                    });
-                });
-            }
-        };
-    })();
-
-    document.addEventListener('DOMContentLoaded', FuegoApp.init);
-    </script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
 </body>
 </html>
