@@ -177,6 +177,36 @@ body {
   animation: fadeUp 0.9s 0.15s ease both;
 }
 
+/* ===== TOP NAV ===== */
+.top-nav {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 28px;
+}
+
+.btn-reserved {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  text-decoration: none;
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  background: rgba(255,255,255,0.03);
+}
+
+.btn-reserved:hover {
+  color: var(--text);
+  border-color: var(--border);
+  background: var(--red-soft);
+}
+
 /* ===== FORM HEADER ===== */
 .form-header { margin-bottom: 32px; }
 

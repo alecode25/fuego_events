@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FUEGO — Scansione</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Raleway:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="dashboard.css"/>
+</head>
+<body>
+
+  <div class="bg-layer"></div>
+  <div class="noise"></div>
+
+  <div class="dash-wrapper">
+
+    <!-- TOP BAR -->
+    <header class="dash-topbar">
+      <div class="dash-brand">
+        <span class="dash-eyebrow">Official Events</span>
+        <span class="dash-logo">FUE<em>GO</em></span>
+      </div>
+      <a href="login.html" class="btn-logout">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M5 2H2.5A1.5 1.5 0 0 0 1 3.5v7A1.5 1.5 0 0 0 2.5 12H5M9 10l3-3-3-3M12 7H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Esci
+      </a>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="dash-main">
+
+      <div class="dash-header">
+        <span class="dash-tag">Pannello Operatore</span>
+        <h1 class="dash-title">Scegli Modalità</h1>
+        <p class="dash-desc">Seleziona come vuoi verificare l'accesso degli ospiti.</p>
+      </div>
+
+      <!-- OPTION CARDS -->
+      <div class="options-grid">
+
+        <!-- CAMERA / QR -->
+        <button class="option-card" id="btnCamera" type="button">
+          <div class="option-icon">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <!-- Camera body -->
+              <rect x="3" y="9" width="30" height="22" rx="3" stroke="currentColor" stroke-width="1.6"/>
+              <!-- Lens -->
+              <circle cx="18" cy="20" r="6" stroke="currentColor" stroke-width="1.6"/>
+              <circle cx="18" cy="20" r="2.5" fill="currentColor" opacity="0.4"/>
+              <!-- Flash -->
+              <rect x="13" y="5" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.4"/>
+              <!-- Corner indicators -->
+              <path d="M7 13v-2h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M29 13v-2h-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="option-body">
+            <span class="option-num">01</span>
+            <h2 class="option-title">Fotocamera<br/>QR Code</h2>
+            <p class="option-desc">Scansiona il QR code del biglietto direttamente con la fotocamera del dispositivo.</p>
+          </div>
+          <div class="option-arrow">→</div>
+        </button>
+
+        <!-- MANUAL CODE -->
+        <button class="option-card" id="btnCode" type="button">
+          <div class="option-icon">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <!-- Keyboard / code symbol -->
+              <rect x="3" y="8" width="30" height="20" rx="3" stroke="currentColor" stroke-width="1.6"/>
+              <!-- Keys row 1 -->
+              <rect x="7"  y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
+              <rect x="13" y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
+              <rect x="19" y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
+              <rect x="25" y="13" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
+              <!-- Keys row 2 -->
+              <rect x="7"  y="19" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
+              <rect x="13" y="19" width="10" height="3" rx="0.8" fill="currentColor"/>
+              <rect x="25" y="19" width="4" height="3" rx="0.8" fill="currentColor" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="option-body">
+            <span class="option-num">02</span>
+            <h2 class="option-title">Inserimento<br/>Codice</h2>
+            <p class="option-desc">Digita manualmente il codice univoco presente sul biglietto dell'ospite.</p>
+          </div>
+          <div class="option-arrow">→</div>
+        </button>
+
+      </div>
+
+    </main>
+
+    <!-- SCANNER MODAL: QR CAMERA -->
+    <div class="modal-overlay" id="modalCamera" style="display:none">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">Scansione QR</h2>
+          <button class="modal-close" id="closeCamera" type="button">✕</button>
+        </div>
+        <div class="qr-viewport">
+          <video id="qrVideo" autoplay playsinline muted></video>
+          <div class="qr-frame">
+            <span class="qr-corner tl"></span>
+            <span class="qr-corner tr"></span>
+            <span class="qr-corner bl"></span>
+            <span class="qr-corner br"></span>
+            <div class="qr-scan-line"></div>
+          </div>
+          <p class="qr-hint">Inquadra il QR code del biglietto</p>
+        </div>
+        <div class="scan-result" id="camResult" style="display:none"></div>
+        <button class="btn-submit mt16" id="stopCamera" type="button" style="display:none">
+          <span class="btn-label">Chiudi Fotocamera</span>
+          <span class="btn-arrow">✕</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SCANNER MODAL: MANUAL CODE -->
+    <div class="modal-overlay" id="modalCode" style="display:none">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">Inserisci Codice</h2>
+          <button class="modal-close" id="closeCode" type="button">✕</button>
+        </div>
+        <div class="code-body">
+          <div class="field" id="fl-code">
+            <label for="ticketCode">Codice Biglietto</label>
+            <input type="text" id="ticketCode" placeholder="es. FG-2024-XXXX"
+              autocomplete="off" autocapitalize="characters" spellcheck="false"/>
+            <span class="err">Inserisci un codice valido</span>
+          </div>
+          <button class="btn-submit" id="verifyBtn" type="button">
+            <span class="btn-label">Verifica Accesso</span>
+            <span class="btn-arrow">→</span>
+          </button>
+          <div class="scan-result" id="codeResult" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
