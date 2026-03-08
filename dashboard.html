@@ -347,7 +347,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Libreria per lettura QR code dalla fotocamera -->
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
 
     <script>
     // =============================================
@@ -470,7 +470,6 @@
     // MODAL
     // =============================================
     let videoStream = null;
-    let scanInterval = null;
 
     function openModal(id) {
         document.getElementById(id).style.display = 'flex';
@@ -488,61 +487,43 @@
         if (id === 'modalCamera') stopCamera();
     }
 
+    let zxingReader = null;
+
     async function startCamera() {
+        const resultEl = document.getElementById('camResult');
         try {
-            videoStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: 'environment' } }
+            const hints = new Map();
+            hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
+            zxingReader = new ZXing.BrowserQRCodeReader(hints);
+
+            const devices = await ZXing.BrowserCodeReader.listVideoInputDevices();
+            const backCamera = devices.find(d =>
+                d.label.toLowerCase().includes('back') ||
+                d.label.toLowerCase().includes('rear') ||
+                d.label.toLowerCase().includes('posteriore') ||
+                d.label.toLowerCase().includes('environment')
+            ) || devices[devices.length - 1] || devices[0];
+
+            const deviceId = backCamera ? backCamera.deviceId : undefined;
+
+            await zxingReader.decodeFromVideoDevice(deviceId, 'qrVideo', (result, err) => {
+                if (result && !isVerifying) {
+                    const scanned = result.getText().trim();
+                    if (UUID_REGEX.test(scanned)) {
+                        verificaBiglietto(scanned, resultEl);
+                    }
+                }
             });
-            const video = document.getElementById('qrVideo');
-            video.srcObject = videoStream;
-            video.onloadedmetadata = () => {
-                video.play();
-                startQRScanning();
-            };
         } catch (err) {
-            mostraRisultato(document.getElementById('camResult'), 'err', '✕ Fotocamera non disponibile');
+            console.error(err);
+            mostraRisultato(resultEl, 'err', '✕ Fotocamera non disponibile');
         }
     }
 
     function stopCamera() {
-        if (scanInterval) { clearInterval(scanInterval); scanInterval = null; }
-        if (videoStream) {
-            videoStream.getTracks().forEach(t => t.stop());
-            videoStream = null;
-        }
+        if (zxingReader) { zxingReader.reset(); zxingReader = null; }
+        if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
         isVerifying = false;
-    }
-
-    // =============================================
-    // QR SCANNING con jsQR
-    // =============================================
-    function startQRScanning() {
-        const video = document.getElementById('qrVideo');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const resultEl = document.getElementById('camResult');
-
-        scanInterval = setInterval(() => {
-            if (isVerifying) return;
-            if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-
-            canvas.width  = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                inversionAttempts: 'dontInvert'
-            });
-
-            if (code && code.data) {
-                const scanned = code.data.trim();
-                // Accetta solo UUID validi
-                if (UUID_REGEX.test(scanned)) {
-                    verificaBiglietto(scanned, resultEl);
-                }
-            }
-        }, 300);
     }
 
     // =============================================
