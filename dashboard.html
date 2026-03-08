@@ -183,17 +183,17 @@
             border-radius: 15px;
             padding: 18px;
             color: white;
-            font-size: 1.4rem;
+            font-size: 1rem;
             text-align: center;
             font-family: 'Oswald';
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             margin: 20px 0;
             outline: none;
             transition: border-color 0.2s;
             text-transform: uppercase;
         }
         .input-field:focus { border-color: var(--primary); }
-        .input-field::placeholder { color: #333; font-size: 1rem; letter-spacing: 2px; }
+        .input-field::placeholder { color: #333; font-size: 0.85rem; letter-spacing: 1px; }
 
         .btn-action {
             width: 100%;
@@ -305,7 +305,7 @@
                 </div>
                 <div class="option-info">
                     <h2>Codice Manuale</h2>
-                    <p>Inserisci il codice FG-XXXXXX manualmente.</p>
+                    <p>Inserisci il codice UUID del biglietto manualmente.</p>
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: #444;">chevron_right</span>
             </div>
@@ -333,10 +333,10 @@
         <div class="modal-content">
             <span class="material-symbols-outlined close-btn" onclick="closeModal('modalCode')">close</span>
             <div class="modal-title">Inserisci Codice</div>
-            <div class="modal-sub">Digita il codice del biglietto</div>
+            <div class="modal-sub">Digita il codice UUID del biglietto</div>
             <input type="text" id="ticketCode" class="input-field"
-                placeholder="FG-XXXXXX" maxlength="9"
-                autocomplete="off" autocapitalize="characters" spellcheck="false">
+                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" maxlength="36"
+                autocomplete="off" autocapitalize="none" spellcheck="false">
             <button class="btn-action" id="verifyBtn">
                 <span class="material-symbols-outlined">verified</span>
                 VERIFICA ACCESSO
@@ -346,6 +346,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Libreria per lettura QR code dalla fotocamera -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
     <script>
     // =============================================
     // SUPABASE
@@ -353,6 +356,9 @@
     const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // UUID regex validator
+    const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
     // =============================================
     // GUARD: verifica sessione
@@ -374,11 +380,18 @@
     // =============================================
     // VERIFICA BIGLIETTO SU SUPABASE
     // =============================================
-    async function verificaBiglietto(codice, resultEl) {
-        codice = codice.trim().toUpperCase();
+    let isVerifying = false;
 
-        if (!codice || codice.length < 6) {
-            mostraRisultato(resultEl, 'err', '✕ Codice troppo corto');
+    async function verificaBiglietto(codice, resultEl) {
+        if (isVerifying) return;
+        isVerifying = true;
+
+        codice = codice.trim().toLowerCase();
+
+        // Valida formato UUID
+        if (!UUID_REGEX.test(codice)) {
+            mostraRisultato(resultEl, 'err', '✕ Codice non valido');
+            isVerifying = false;
             return;
         }
 
@@ -395,11 +408,13 @@
 
         if (error) {
             mostraRisultato(resultEl, 'err', '✕ Errore di rete');
+            isVerifying = false;
             return;
         }
 
         if (!ticket) {
-            mostraRisultato(resultEl, 'err', '✕ Codice non trovato');
+            mostraRisultato(resultEl, 'err', '✕ Biglietto non trovato');
+            isVerifying = false;
             return;
         }
 
@@ -410,12 +425,14 @@
                 '⚠ Biglietto già utilizzato' +
                 (nome ? '<div class="result-name">Intestato a: ' + nome + '</div>' : '')
             );
+            isVerifying = false;
             return;
         }
 
         // 3. Annullato?
         if (ticket.stato === 'annullato') {
             mostraRisultato(resultEl, 'err', '✕ Biglietto annullato');
+            isVerifying = false;
             return;
         }
 
@@ -430,6 +447,7 @@
 
         if (updateErr) {
             mostraRisultato(resultEl, 'err', '✕ Errore aggiornamento');
+            isVerifying = false;
             return;
         }
 
@@ -438,6 +456,8 @@
             '✓ Accesso Consentito' +
             (nome ? '<div class="result-name">Benvenuto/a, ' + nome + '</div>' : '')
         );
+
+        isVerifying = false;
     }
 
     function mostraRisultato(el, tipo, html) {
@@ -450,6 +470,7 @@
     // MODAL
     // =============================================
     let videoStream = null;
+    let scanInterval = null;
 
     function openModal(id) {
         document.getElementById(id).style.display = 'flex';
@@ -472,17 +493,56 @@
             videoStream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: { ideal: 'environment' } }
             });
-            document.getElementById('qrVideo').srcObject = videoStream;
+            const video = document.getElementById('qrVideo');
+            video.srcObject = videoStream;
+            video.onloadedmetadata = () => {
+                video.play();
+                startQRScanning();
+            };
         } catch (err) {
             mostraRisultato(document.getElementById('camResult'), 'err', '✕ Fotocamera non disponibile');
         }
     }
 
     function stopCamera() {
+        if (scanInterval) { clearInterval(scanInterval); scanInterval = null; }
         if (videoStream) {
             videoStream.getTracks().forEach(t => t.stop());
             videoStream = null;
         }
+        isVerifying = false;
+    }
+
+    // =============================================
+    // QR SCANNING con jsQR
+    // =============================================
+    function startQRScanning() {
+        const video = document.getElementById('qrVideo');
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const resultEl = document.getElementById('camResult');
+
+        scanInterval = setInterval(() => {
+            if (isVerifying) return;
+            if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+
+            canvas.width  = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: 'dontInvert'
+            });
+
+            if (code && code.data) {
+                const scanned = code.data.trim();
+                // Accetta solo UUID validi
+                if (UUID_REGEX.test(scanned)) {
+                    verificaBiglietto(scanned, resultEl);
+                }
+            }
+        }, 300);
     }
 
     // =============================================
@@ -497,9 +557,9 @@
         if (e.key === 'Enter') document.getElementById('verifyBtn').click();
     });
 
-    // Auto uppercase e formato FG-
     document.getElementById('ticketCode').addEventListener('input', (e) => {
-        let v = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+        // Rimuovi caratteri non validi per UUID
+        let v = e.target.value.toLowerCase().replace(/[^a-f0-9-]/g, '');
         e.target.value = v;
         document.getElementById('codeResult').style.display = 'none';
     });
