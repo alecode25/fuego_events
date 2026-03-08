@@ -450,6 +450,21 @@
             (nome ? '<div class="result-name">Benvenuto/a, ' + nome + '</div>' : '')
         );
 
+        // Countdown visivo prima della prossima scansione
+        let secondi = Math.round(SCAN_COOLDOWN / 1000);
+        const countdown = setInterval(() => {
+            secondi--;
+            if (secondi <= 0) {
+                clearInterval(countdown);
+                if (resultEl.style.display !== 'none') {
+                    mostraRisultato(resultEl, 'warn', '⏳ Pronto — inquadra il QR');
+                }
+            } else {
+                const nomeEl = nome ? '<div class="result-name">Prossima scansione tra ' + secondi + 's</div>' : '';
+                mostraRisultato(resultEl, 'ok', '✓ Accesso Consentito' + nomeEl);
+            }
+        }, 1000);
+
         isVerifying = false;
     }
 
@@ -481,6 +496,8 @@
     }
 
     let html5QrCode = null;
+    let lastScanTime = 0;
+    const SCAN_COOLDOWN = 6000; // 6 secondi tra una scansione e l'altra
 
     async function startCamera() {
         const resultEl = document.getElementById('camResult');
@@ -490,7 +507,7 @@
             html5QrCode = new Html5Qrcode("qrReader");
 
             const config = {
-                fps: 10,
+                fps: 5,
                 qrbox: { width: 220, height: 220 },
                 aspectRatio: 1.0
             };
@@ -499,9 +516,12 @@
                 { facingMode: "environment" },
                 config,
                 (decodedText) => {
-                    // QR letto con successo
+                    const now = Date.now();
+                    if (isVerifying || (now - lastScanTime) < SCAN_COOLDOWN) return;
+
                     const codice = decodedText.trim().toUpperCase();
-                    if (/^FG-[A-Z0-9]+$/.test(codice) && !isVerifying) {
+                    if (/^FG-[A-Z0-9]+$/.test(codice)) {
+                        lastScanTime = now;
                         verificaBiglietto(codice, resultEl);
                     }
                 },
