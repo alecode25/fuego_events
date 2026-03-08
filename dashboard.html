@@ -377,9 +377,6 @@
     let isVerifying = false;
 
     async function verificaBiglietto(codice, resultEl) {
-        if (isVerifying) return;
-        isVerifying = true;
-
         codice = codice.trim();
 
         if (!codice || codice.length < 3) {
@@ -497,7 +494,7 @@
 
     let html5QrCode = null;
     let lastScanTime = 0;
-    const SCAN_COOLDOWN = 6000; // 6 secondi tra una scansione e l'altra
+    const SCAN_COOLDOWN = 3000; // 3 secondi tra una scansione e l'altra
 
     async function startCamera() {
         const resultEl = document.getElementById('camResult');
@@ -521,7 +518,8 @@
 
                     const codice = decodedText.trim().toUpperCase();
                     if (/^FG-[A-Z0-9]+$/.test(codice)) {
-                        lastScanTime = now;
+                        lastScanTime = now;   // blocca subito prima di async
+                        isVerifying = true;   // doppio lock
                         verificaBiglietto(codice, resultEl);
                     }
                 },
