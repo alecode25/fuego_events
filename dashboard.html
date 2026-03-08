@@ -158,22 +158,15 @@
             overflow: hidden;
             border: 2px solid var(--border);
         }
-        #qrVideo { width: 100%; height: 100%; object-fit: cover; }
-        .scan-overlay {
-            position: absolute; inset: 0;
-            border: 2px solid var(--primary);
-            margin: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 0 1000px rgba(0,0,0,0.5);
+        #qrReader {
+            width: 100% !important;
+            border: none !important;
+            background: transparent !important;
         }
-        .scan-line {
-            position: absolute; width: 100%; height: 2px;
-            background: var(--primary);
-            top: 0; left: 0;
-            box-shadow: 0 0 15px var(--primary);
-            animation: scan 2s infinite linear;
-        }
-        @keyframes scan { 0% { top: 0% } 100% { top: 100% } }
+        #qrReader video { border-radius: 16px; }
+        #qrReader img { display: none; }
+        #qrReader__scan_region { background: transparent !important; }
+        #qrReader__dashboard { display: none !important; }
 
         /* INPUT */
         .input-field {
@@ -319,10 +312,7 @@
             <div class="modal-title">Scansione QR</div>
             <div class="modal-sub">Inquadra il biglietto</div>
             <div class="scanner-container">
-                <video id="qrVideo" autoplay playsinline muted></video>
-                <div class="scan-overlay">
-                    <div class="scan-line"></div>
-                </div>
+                <div id="qrReader"></div>
             </div>
             <div id="camResult" class="result-box"></div>
         </div>
@@ -335,8 +325,8 @@
             <div class="modal-title">Inserisci Codice</div>
             <div class="modal-sub">Digita il codice UUID del biglietto</div>
             <input type="text" id="ticketCode" class="input-field"
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" maxlength="36"
-                autocomplete="off" autocapitalize="none" spellcheck="false">
+                placeholder="FG-XXXXXX oppure UUID" maxlength="36"
+                autocomplete="off" autocapitalize="characters" spellcheck="false">
             <button class="btn-action" id="verifyBtn">
                 <span class="material-symbols-outlined">verified</span>
                 VERIFICA ACCESSO
@@ -346,8 +336,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Libreria per lettura QR code dalla fotocamera -->
-    <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <script>
     // =============================================
@@ -357,8 +346,13 @@
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    // UUID regex validator
+    // Accetta UUID oppure formato FG-XXXXXX
     const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const FG_REGEX   = /^FG-[A-Z0-9]{4,10}$/i;
+
+    function isCodiceValido(c) {
+        return UUID_REGEX.test(c) || FG_REGEX.test(c);
+    }
 
     // =============================================
     // GUARD: verifica sessione
@@ -386,11 +380,10 @@
         if (isVerifying) return;
         isVerifying = true;
 
-        codice = codice.trim().toLowerCase();
+        codice = codice.trim();
 
-        // Valida formato UUID
-        if (!UUID_REGEX.test(codice)) {
-            mostraRisultato(resultEl, 'err', '✕ Codice non valido');
+        if (!codice || codice.length < 3) {
+            mostraRisultato(resultEl, 'err', '✕ Codice troppo corto');
             isVerifying = false;
             return;
         }
@@ -487,42 +480,49 @@
         if (id === 'modalCamera') stopCamera();
     }
 
-    let zxingReader = null;
+    let html5QrCode = null;
 
     async function startCamera() {
         const resultEl = document.getElementById('camResult');
+        mostraRisultato(resultEl, 'warn', '⏳ Avvio fotocamera...');
+
         try {
-            const hints = new Map();
-            hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
-            zxingReader = new ZXing.BrowserQRCodeReader(hints);
+            html5QrCode = new Html5Qrcode("qrReader");
 
-            const devices = await ZXing.BrowserCodeReader.listVideoInputDevices();
-            const backCamera = devices.find(d =>
-                d.label.toLowerCase().includes('back') ||
-                d.label.toLowerCase().includes('rear') ||
-                d.label.toLowerCase().includes('posteriore') ||
-                d.label.toLowerCase().includes('environment')
-            ) || devices[devices.length - 1] || devices[0];
+            const config = {
+                fps: 10,
+                qrbox: { width: 220, height: 220 },
+                aspectRatio: 1.0
+            };
 
-            const deviceId = backCamera ? backCamera.deviceId : undefined;
-
-            await zxingReader.decodeFromVideoDevice(deviceId, 'qrVideo', (result, err) => {
-                if (result && !isVerifying) {
-                    const scanned = result.getText().trim();
-                    if (UUID_REGEX.test(scanned)) {
-                        verificaBiglietto(scanned, resultEl);
+            await html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    // QR letto con successo
+                    const codice = decodedText.trim().toUpperCase();
+                    if (/^FG-[A-Z0-9]+$/.test(codice) && !isVerifying) {
+                        verificaBiglietto(codice, resultEl);
                     }
-                }
-            });
+                },
+                (errorMsg) => { /* ignora errori di frame */ }
+            );
+
+            mostraRisultato(resultEl, 'warn', '⏳ Pronto — inquadra il QR');
+
         } catch (err) {
             console.error(err);
-            mostraRisultato(resultEl, 'err', '✕ Fotocamera non disponibile');
+            mostraRisultato(resultEl, 'err', '✕ Errore: ' + err.message);
         }
     }
 
     function stopCamera() {
-        if (zxingReader) { zxingReader.reset(); zxingReader = null; }
-        if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+                html5QrCode = null;
+            }).catch(() => {});
+        }
         isVerifying = false;
     }
 
@@ -539,8 +539,7 @@
     });
 
     document.getElementById('ticketCode').addEventListener('input', (e) => {
-        // Rimuovi caratteri non validi per UUID
-        let v = e.target.value.toLowerCase().replace(/[^a-f0-9-]/g, '');
+        let v = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
         e.target.value = v;
         document.getElementById('codeResult').style.display = 'none';
     });
