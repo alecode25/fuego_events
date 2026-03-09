@@ -135,6 +135,15 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
         }
+        .venue-clickable {
+            cursor: pointer;
+            transition: border-color 0.25s, background 0.25s;
+        }
+        .venue-clickable:hover {
+            border-color: rgba(255, 46, 0, 0.4);
+            background: rgba(255, 46, 0, 0.06);
+        }
+
         .venue-icon {
             font-size: 1.5rem;
             flex-shrink: 0;
@@ -382,15 +391,17 @@
 
     <!-- ─── VENUE BADGE ─── -->
     <div class="venue-badge">
-        <div class="venue-inner">
-            <span class="venue-icon">🍹</span>
-            <div class="venue-info">
-                <span>Location</span>
-                <strong>MOJITO</strong>
-                <em>Chiringuito Riccione</em>
+        <a href="https://maps.app.goo.gl/yyCAfcJeJihTyDaf6" target="_blank" rel="noopener" style="text-decoration: none; display: block;">
+            <div class="venue-inner venue-clickable">
+                <span class="venue-icon">🍹</span>
+                <div class="venue-info">
+                    <span>Location</span>
+                    <strong>MOJITO</strong>
+                    <em>Chiringuito Riccione · Apri in Maps</em>
+                </div>
+                <span class="material-symbols-outlined" style="color: var(--primary); font-size: 20px;">location_on</span>
             </div>
-            <span class="material-symbols-outlined" style="color: #444; font-size: 18px;">location_on</span>
-        </div>
+        </a>
     </div>
 
     <!-- ─── CARD ─── -->
