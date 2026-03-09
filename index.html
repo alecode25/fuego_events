@@ -27,11 +27,14 @@
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Raleway', sans-serif;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            justify-content: flex-start;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px 0 40px;
         }
 
         .ambient-bg {
@@ -48,21 +51,130 @@
                 radial-gradient(circle at 80% 80%, rgba(10,5,5,0.85), transparent 60%),
                 linear-gradient(135deg, rgba(5,3,4,0.82) 0%, rgba(9,5,6,0.70) 100%);
         }
-        .noise { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.2; pointer-events: none; }
+        .noise { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.2; pointer-events: none; z-index: 0; }
 
+        /* ─── COUNTDOWN BANNER ─── */
+        .countdown-banner {
+            width: 100%;
+            max-width: 420px;
+            margin-bottom: 16px;
+            padding: 0 15px;
+            position: relative;
+            z-index: 1;
+        }
+        .countdown-inner {
+            background: rgba(255, 46, 0, 0.08);
+            border: 1px solid rgba(255, 46, 0, 0.3);
+            border-radius: 20px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .countdown-label {
+            font-size: 0.55rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--primary);
+        }
+        .countdown-units {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .countdown-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            min-width: 52px;
+        }
+        .countdown-num {
+            font-family: 'Oswald';
+            font-size: 2.2rem;
+            line-height: 1;
+            letter-spacing: -1px;
+            color: #fff;
+        }
+        .countdown-sub {
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #666;
+        }
+        .countdown-sep {
+            font-family: 'Oswald';
+            font-size: 1.8rem;
+            color: rgba(255,46,0,0.4);
+            line-height: 1;
+            margin-top: -6px;
+        }
+
+        /* ─── VENUE BADGE ─── */
+        .venue-badge {
+            width: 100%;
+            max-width: 420px;
+            padding: 0 15px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .venue-inner {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .venue-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .venue-info { flex: 1; }
+        .venue-info span {
+            display: block;
+            font-size: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        .venue-info strong {
+            font-family: 'Oswald';
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+        .venue-info em {
+            display: block;
+            font-style: normal;
+            font-size: 0.65rem;
+            color: #888;
+            margin-top: 1px;
+        }
+
+        /* ─── CARD SCENE ─── */
         .scene {
             width: 100%;
             max-width: 420px;
-            height: 90vh;
-            max-height: 700px;
             perspective: 1500px;
-            padding: 15px;
+            padding: 0 15px;
+            position: relative;
+            z-index: 1;
         }
 
         .card {
             position: relative;
             width: 100%;
-            height: 100%;
             transition: var(--transition);
             transform-style: preserve-3d;
         }
@@ -70,8 +182,8 @@
         .card.is-flipped { transform: rotateY(180deg); }
 
         .card-face {
-            position: absolute;
-            inset: 0;
+            position: relative;
+            width: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             background: var(--glass);
@@ -83,13 +195,26 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            transform: translateZ(0);
+        }
+
+        /* When flipped, the back face uses absolute positioning */
+        .card-back {
+            position: absolute;
+            inset: 0;
+            transform: rotateY(180deg) translateZ(1px);
             overflow-y: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-        .card-face::-webkit-scrollbar { display: none; }
-        .card-back { transform: rotateY(180deg) translateZ(1px); }
+        .card-back::-webkit-scrollbar { display: none; }
+
+        /* Front face scrollable too */
+        .card-front {
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .card-front::-webkit-scrollbar { display: none; }
 
         .brand { text-align: center; margin-bottom: 15px; flex-shrink: 0; }
         .brand h1 { font-family: 'Oswald'; font-size: 3rem; letter-spacing: -2px; text-transform: uppercase; line-height: 1; }
@@ -181,7 +306,7 @@
         .success-overlay h2 { font-family: 'Oswald'; font-size: 2rem; }
         .success-overlay p  { font-size: 0.85rem; color: #aaa; line-height: 1.6; }
 
-        /* Toast notifica */
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -202,6 +327,21 @@
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast.ok   { border-color: #1db954; color: #1db954; }
         .toast.err  { border-color: var(--error); color: var(--error); }
+
+        /* Pulsing dot for live countdown */
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .live-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -210,6 +350,50 @@
     <div class="noise"></div>
     <div class="toast" id="toast"></div>
 
+    <!-- ─── COUNTDOWN ─── -->
+    <div class="countdown-banner">
+        <div class="countdown-inner">
+            <div class="countdown-label">
+                <span class="live-dot"></span>L'evento inizia tra
+            </div>
+            <div class="countdown-units">
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-days">00</span>
+                    <span class="countdown-sub">Giorni</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-hours">00</span>
+                    <span class="countdown-sub">Ore</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-mins">00</span>
+                    <span class="countdown-sub">Min</span>
+                </div>
+                <span class="countdown-sep">:</span>
+                <div class="countdown-unit">
+                    <span class="countdown-num" id="cd-secs">00</span>
+                    <span class="countdown-sub">Sec</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── VENUE BADGE ─── -->
+    <div class="venue-badge">
+        <div class="venue-inner">
+            <span class="venue-icon">🍹</span>
+            <div class="venue-info">
+                <span>Location</span>
+                <strong>MOJITO</strong>
+                <em>Chiringuito Riccione</em>
+            </div>
+            <span class="material-symbols-outlined" style="color: #444; font-size: 18px;">location_on</span>
+        </div>
+    </div>
+
+    <!-- ─── CARD ─── -->
     <div class="scene">
         <div class="card" id="mainCard">
             
@@ -313,5 +497,38 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
+
+    <!-- ─── COUNTDOWN SCRIPT ─── -->
+    <script>
+        // ⬇️  Cambia questa data con quella dell'evento reale
+        const EVENT_DATE = new Date('2026-04-25T23:00:00');
+
+        function updateCountdown() {
+            const now  = new Date();
+            const diff = EVENT_DATE - now;
+
+            if (diff <= 0) {
+                document.getElementById('cd-days').textContent  = '00';
+                document.getElementById('cd-hours').textContent = '00';
+                document.getElementById('cd-mins').textContent  = '00';
+                document.getElementById('cd-secs').textContent  = '00';
+                document.querySelector('.countdown-label').innerHTML = '🔥 L\'evento è LIVE!';
+                return;
+            }
+
+            const days  = Math.floor(diff / 86400000);
+            const hours = Math.floor((diff % 86400000) / 3600000);
+            const mins  = Math.floor((diff % 3600000) / 60000);
+            const secs  = Math.floor((diff % 60000) / 1000);
+
+            document.getElementById('cd-days').textContent  = String(days).padStart(2, '0');
+            document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('cd-mins').textContent  = String(mins).padStart(2, '0');
+            document.getElementById('cd-secs').textContent  = String(secs).padStart(2, '0');
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
 </body>
 </html>
