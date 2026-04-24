@@ -31,6 +31,7 @@ async function updateSpotsBar() {
         const pct = Math.min((count / SPOTS_CAP) * 100, 100);
         document.getElementById('spots-count').textContent = count + ' / ' + SPOTS_CAP + ' oggi';
         document.getElementById('spots-fill').style.width = pct + '%';
+        document.getElementById('spots-warning').style.display = count >= SPOTS_CAP ? 'block' : 'none';
     } catch (_) {}
 }
 

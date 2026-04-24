@@ -607,6 +607,15 @@
             width: 0%;
             transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .spots-warning {
+            display: none;
+            margin-top: 8px;
+            font-size: 0.6rem;
+            color: #ffaa00;
+            font-weight: 600;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -673,6 +682,7 @@
             <div class="spots-track">
                 <div class="spots-fill" id="spots-fill"></div>
             </div>
+            <p class="spots-warning" id="spots-warning">⚠️ Limite raggiunto — le email non verranno più inviate oggi.</p>
         </div>
     </div>
 
