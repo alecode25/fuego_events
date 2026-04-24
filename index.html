@@ -551,6 +551,62 @@
             vertical-align: middle;
             animation: pulse-dot 1.5s ease-in-out infinite;
         }
+
+        /* ─── SPOTS BAR ─── */
+        .spots-bar {
+            width: 100%;
+            max-width: 420px;
+            padding: 0 15px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .spots-inner {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 12px 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .spots-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .spots-label {
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #666;
+        }
+
+        .spots-count {
+            font-family: 'Oswald';
+            font-size: 0.85rem;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        .spots-track {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .spots-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #ff6b00);
+            border-radius: 99px;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
 
@@ -605,6 +661,19 @@
                     style="color: var(--primary); font-size: 20px;">location_on</span>
             </div>
         </a>
+    </div>
+
+    <!-- ─── SPOTS BAR ─── -->
+    <div class="spots-bar">
+        <div class="spots-inner">
+            <div class="spots-header">
+                <span class="spots-label">Iscritti alla guest list</span>
+                <span class="spots-count" id="spots-count">— / 100</span>
+            </div>
+            <div class="spots-track">
+                <div class="spots-fill" id="spots-fill"></div>
+            </div>
+        </div>
     </div>
 
     <!-- ─── CARD ─── -->

@@ -6,6 +6,34 @@ const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+const SPOTS_CAP = 100;
+
+// =============================================
+// SPOTS BAR
+// =============================================
+async function updateSpotsBar() {
+    try {
+        const now = new Date();
+        const todayItaly = new Intl.DateTimeFormat('sv', { timeZone: 'Europe/Rome' }).format(now);
+        const tzPart = new Intl.DateTimeFormat('en', { timeZone: 'Europe/Rome', timeZoneName: 'shortOffset' })
+            .formatToParts(now).find(p => p.type === 'timeZoneName').value.replace('GMT', '');
+        const [tzH, tzM] = tzPart.replace(/[+-]/, '').split(':');
+        const offsetStr = (tzPart.startsWith('-') ? '-' : '+') + tzH.padStart(2, '0') + ':' + (tzM || '00').padStart(2, '0');
+        const todayStart = `${todayItaly}T00:00:00${offsetStr}`;
+
+        const { count, error } = await db
+            .from('utenti')
+            .select('*', { count: 'exact', head: true })
+            .gte('created_at', todayStart);
+
+        if (error || count === null) return;
+
+        const pct = Math.min((count / SPOTS_CAP) * 100, 100);
+        document.getElementById('spots-count').textContent = count + ' / ' + SPOTS_CAP + ' oggi';
+        document.getElementById('spots-fill').style.width = pct + '%';
+    } catch (_) {}
+}
+
 // =============================================
 // TOAST
 // =============================================
@@ -109,6 +137,7 @@ const FuegoApp = (() => {
             // 2. Successo (il ticket viene creato automaticamente dal trigger)
             showToast('✓ Iscrizione completata!', 'ok');
             ui.reg.success.style.display = 'flex';
+            updateSpotsBar();
 
         } catch (e) {
             showToast('Errore di rete. Riprova.', 'err');
@@ -193,6 +222,9 @@ const FuegoApp = (() => {
                 ui.login.pass.type = isPass ? 'text' : 'password';
                 ui.login.togglePass.textContent = isPass ? 'visibility_off' : 'visibility';
             });
+
+            // Carica count iscritti
+            updateSpotsBar();
 
             // Submit registrazione
             ui.reg.btn.addEventListener('click', handleRegister);
