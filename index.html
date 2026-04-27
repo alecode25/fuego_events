@@ -554,6 +554,35 @@
             animation: pulse-dot 1.5s ease-in-out infinite;
         }
 
+        .info-banner {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-banner-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: #bbb;
+            line-height: 1.4;
+        }
+
+        .info-banner-price {
+            color: #ffaa00;
+            font-size: 0.8rem;
+        }
+
+        .info-banner-price b {
+            color: #fff;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 
@@ -623,6 +652,17 @@
                 </div>
 
                 <h2 class="form-title">Guest List</h2>
+
+                <div class="info-banner">
+                    <div class="info-banner-row">
+                        <span class="material-symbols-outlined" style="font-size:1.1rem; color: var(--primary); flex-shrink:0;">info</span>
+                        <span>Nessuna email di conferma — il tuo nome sarà in lista all'ingresso.</span>
+                    </div>
+                    <div class="info-banner-row info-banner-price">
+                        <span class="material-symbols-outlined" style="font-size:1.1rem; color: #ffaa00; flex-shrink:0;">local_bar</span>
+                        <span><b>10€</b> ingresso &nbsp;+&nbsp; 1 drink incluso</span>
+                    </div>
+                </div>
 
                 <div class="row-2">
                     <div class="field" id="f-nome">
