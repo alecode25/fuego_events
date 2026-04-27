@@ -6,33 +6,27 @@ const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const SPOTS_CAP = 100;
+const SPOTS_CAP = 300;
 
 // =============================================
 // SPOTS BAR
 // =============================================
 async function updateSpotsBar() {
     try {
-        const now = new Date();
-        const todayItaly = new Intl.DateTimeFormat('sv', { timeZone: 'Europe/Rome' }).format(now);
-        const tzPart = new Intl.DateTimeFormat('en', { timeZone: 'Europe/Rome', timeZoneName: 'shortOffset' })
-            .formatToParts(now).find(p => p.type === 'timeZoneName').value.replace('GMT', '');
-        const [tzH, tzM] = tzPart.replace(/[+-]/, '').split(':');
-        const offsetStr = (tzPart.startsWith('-') ? '-' : '+') + tzH.padStart(2, '0') + ':' + (tzM || '00').padStart(2, '0');
-        const todayStart = `${todayItaly}T00:00:00${offsetStr}`;
-
         const { count, error } = await db
             .from('utenti')
-            .select('*', { count: 'exact', head: true })
-            .gte('created_at', todayStart);
+            .select('*', { count: 'exact', head: true });
 
         if (error || count === null) return;
 
-        const displayCount = count - 52;
-        const pct = Math.min((displayCount / SPOTS_CAP) * 100, 100);
-        document.getElementById('spots-count').textContent = displayCount + ' / ' + SPOTS_CAP + ' oggi';
+        const pct = Math.min((count / SPOTS_CAP) * 100, 100);
+        document.getElementById('spots-count').textContent = count + ' / ' + SPOTS_CAP;
         document.getElementById('spots-fill').style.width = pct + '%';
-        document.getElementById('spots-warning').style.display = displayCount >= SPOTS_CAP ? 'block' : 'none';
+        document.getElementById('spots-warning').style.display = count >= SPOTS_CAP ? 'block' : 'none';
+
+        if (count >= SPOTS_CAP) {
+            window.location.replace('chiusura.html');
+        }
     } catch (_) {}
 }
 
@@ -76,7 +70,11 @@ const FuegoApp = (() => {
     const validate = {
         email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
         phone: (v) => /^[\d\s\+\-\(\)]{7,}$/.test(v),
-        empty: (v) => v.trim().length > 0
+        empty: (v) => v.trim().length > 0,
+        schoolEmail: (v) => {
+            const domain = v.split('@')[1] || '';
+            return domain.endsWith('.edu.it') || domain === 'istruzione.it';
+        }
     };
 
     function setErr(id, show) {
@@ -101,7 +99,19 @@ const FuegoApp = (() => {
         if (!validate.empty(nome))    { setErr('f-nome', true);     ok = false; } else setErr('f-nome', false);
         if (!validate.empty(cognome)) { setErr('f-cognome', true);  ok = false; } else setErr('f-cognome', false);
         if (!validate.phone(tel))     { setErr('f-telefono', true); ok = false; } else setErr('f-telefono', false);
-        if (!validate.email(email))   { setErr('f-email', true);    ok = false; } else setErr('f-email', false);
+        if (!validate.email(email)) {
+            setErr('f-email', true);
+            ok = false;
+        } else if (validate.schoolEmail(email)) {
+            setErr('f-email', true);
+            const hint = document.querySelector('#f-email .err-hint');
+            if (hint) hint.textContent = 'Email scolastica non ammessa';
+            ok = false;
+        } else {
+            setErr('f-email', false);
+            const hint = document.querySelector('#f-email .err-hint');
+            if (hint) hint.textContent = 'Email non valida';
+        }
 
         if (!ui.reg.privacy.checked) {
             ui.reg.privacyBox.style.borderColor = 'var(--error)';

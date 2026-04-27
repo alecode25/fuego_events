@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- REGISTRAZIONI CHIUSE: rimuovi la riga sotto per riaprire -->
-    <meta http-equiv="refresh" content="0; url=chiusura.html"> 
+    <!-- <meta http-equiv="refresh" content="0; url=chiusura.html">  -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUEGO — Guest List & Access</title>
     <link rel="icon" href="logo.jpg" type="image/x-icon">
@@ -678,13 +678,13 @@
     <div class="spots-bar">
         <div class="spots-inner">
             <div class="spots-header">
-                <span class="spots-label">Iscritti alla guest list</span>
-                <span class="spots-count" id="spots-count">— / 100</span>
+                <span class="spots-label">Posti disponibili</span>
+                <span class="spots-count" id="spots-count">— / 300</span>
             </div>
             <div class="spots-track">
                 <div class="spots-fill" id="spots-fill"></div>
             </div>
-            <p class="spots-warning" id="spots-warning">⚠️ Limite raggiunto — le email non verranno più inviate oggi.</p>
+            <p class="spots-warning" id="spots-warning">⚠️ Posti esauriti — registrazioni chiuse.</p>
         </div>
     </div>
 
@@ -801,7 +801,7 @@
     <!-- ─── COUNTDOWN SCRIPT ─── -->
     <script>
         // ⬇️  Cambia questa data con quella dell'evento reale
-        const EVENT_DATE = new Date('2026-04-25T17:00:00');
+        const EVENT_DATE = new Date('2026-05-02T17:00:00');
 
         function updateCountdown() {
             const now = new Date();
