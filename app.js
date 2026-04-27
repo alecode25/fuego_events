@@ -6,29 +6,6 @@ const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const SPOTS_CAP = 400;
-
-// =============================================
-// SPOTS BAR
-// =============================================
-async function updateSpotsBar() {
-    try {
-        const { count, error } = await db
-            .from('utenti')
-            .select('*', { count: 'exact', head: true });
-
-        if (error || count === null) return;
-
-        const pct = Math.min((count / SPOTS_CAP) * 100, 100);
-        document.getElementById('spots-count').textContent = count + ' / ' + SPOTS_CAP;
-        document.getElementById('spots-fill').style.width = pct + '%';
-        document.getElementById('spots-warning').style.display = count >= SPOTS_CAP ? 'block' : 'none';
-
-        if (count >= SPOTS_CAP) {
-            window.location.replace('chiusura.html');
-        }
-    } catch (_) {}
-}
 
 // =============================================
 // TOAST
@@ -149,7 +126,6 @@ const FuegoApp = (() => {
             // 2. Successo (il ticket viene creato automaticamente dal trigger)
             showToast('✓ Iscrizione completata!', 'ok');
             ui.reg.success.style.display = 'flex';
-            updateSpotsBar();
 
         } catch (e) {
             showToast('Errore di rete. Riprova.', 'err');
@@ -234,9 +210,6 @@ const FuegoApp = (() => {
                 ui.login.pass.type = isPass ? 'text' : 'password';
                 ui.login.togglePass.textContent = isPass ? 'visibility_off' : 'visibility';
             });
-
-            // Carica count iscritti
-            updateSpotsBar();
 
             // Submit registrazione
             ui.reg.btn.addEventListener('click', handleRegister);
