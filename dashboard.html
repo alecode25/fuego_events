@@ -232,6 +232,128 @@
         .result-box.err  { background: rgba(255,68,68,0.08);  color: var(--error);   border: 1px solid var(--error); }
         .result-box.warn { background: rgba(255,170,0,0.08);  color: var(--warn);    border: 1px solid var(--warn); }
 
+        /* PARTICIPANTS MODAL */
+        .modal-full {
+            max-width: 520px;
+            height: 90vh;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .search-wrap {
+            position: relative;
+            margin: 16px 0 12px;
+        }
+        .search-wrap .material-symbols-outlined {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #555; font-size: 20px; pointer-events: none;
+        }
+        .search-input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 14px 14px 44px;
+            color: white;
+            font-size: 0.95rem;
+            font-family: 'Raleway';
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--primary); }
+        .search-input::placeholder { color: #444; }
+
+        .participants-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 4px;
+        }
+        .participants-list::-webkit-scrollbar { width: 4px; }
+        .participants-list::-webkit-scrollbar-track { background: transparent; }
+        .participants-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+        .participant-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            transition: background 0.2s;
+        }
+        .participant-row:hover { background: rgba(255,255,255,0.06); }
+        .participant-avatar {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: rgba(255,46,0,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Oswald'; font-size: 1rem; color: var(--primary);
+            flex-shrink: 0;
+        }
+        .participant-info { flex: 1; min-width: 0; text-align: left; }
+        .participant-name { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .participant-email { font-size: 0.72rem; color: #555; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .participant-badge {
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; padding: 4px 10px; border-radius: 20px;
+            flex-shrink: 0;
+        }
+        .badge-usato   { background: rgba(0,255,136,0.1);  color: var(--success); border: 1px solid var(--success); }
+        .badge-valido  { background: rgba(255,170,0,0.1);  color: var(--warn);    border: 1px solid var(--warn); }
+        .badge-annullato { background: rgba(255,68,68,0.1); color: var(--error);  border: 1px solid var(--error); }
+
+        .btn-confirm-entry {
+            display: flex; align-items: center; gap: 4px;
+            background: rgba(0,255,136,0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            font-size: 0.7rem; font-weight: 700; font-family: 'Raleway';
+            text-transform: uppercase; letter-spacing: 1px;
+            padding: 6px 12px; border-radius: 20px;
+            cursor: pointer; transition: background 0.2s, opacity 0.2s;
+            flex-shrink: 0; white-space: nowrap;
+        }
+        .btn-confirm-entry:hover { background: rgba(0,255,136,0.2); }
+        .btn-confirm-entry:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .list-meta {
+            font-size: 0.72rem; color: #555; text-align: center;
+            margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .list-empty { text-align: center; color: #444; font-size: 0.85rem; padding: 30px 0; }
+
+        /* RESPONSIVE — participants modal */
+        @media (max-width: 480px) {
+            .modal { padding: 0; align-items: flex-end; justify-content: flex-end; }
+
+            .modal-content { border-radius: 28px 28px 0 0; padding: 28px 16px 20px; }
+
+            .modal-full {
+                max-width: 100%;
+                max-height: 92vh;
+                height: 92vh;
+                border-radius: 28px 28px 0 0;
+            }
+
+            .modal-title { font-size: 1.3rem; }
+
+            .participant-row { padding: 10px 12px; gap: 10px; }
+            .participant-avatar { width: 36px; height: 36px; font-size: 0.85rem; border-radius: 10px; }
+            .participant-name { font-size: 0.85rem; }
+            .participant-email { font-size: 0.68rem; }
+
+            .btn-confirm-entry { padding: 6px 10px; font-size: 0.65rem; }
+            .btn-confirm-entry .material-symbols-outlined { display: none; }
+
+            .participant-badge { font-size: 0.6rem; padding: 3px 8px; }
+        }
+
         /* GUARD overlay */
         .guard-overlay {
             display: none;
@@ -302,6 +424,17 @@
                 </div>
                 <span class="material-symbols-outlined" style="margin-left: auto; color: #444;">chevron_right</span>
             </div>
+
+            <div class="option-card" onclick="openParticipants()">
+                <div class="option-icon">
+                    <span class="material-symbols-outlined" style="font-size: 32px;">group</span>
+                </div>
+                <div class="option-info">
+                    <h2>Lista Partecipanti</h2>
+                    <p>Cerca e visualizza tutti i partecipanti registrati.</p>
+                </div>
+                <span class="material-symbols-outlined" style="margin-left: auto; color: #444;">chevron_right</span>
+            </div>
         </div>
     </main>
 
@@ -332,6 +465,25 @@
                 VERIFICA ACCESSO
             </button>
             <div id="codeResult" class="result-box"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: LISTA PARTECIPANTI -->
+    <div class="modal" id="modalParticipants">
+        <div class="modal-content modal-full">
+            <span class="material-symbols-outlined close-btn" onclick="closeModal('modalParticipants')">close</span>
+            <div class="modal-title">Partecipanti</div>
+            <div class="modal-sub" id="participantsMeta">Caricamento...</div>
+
+            <div class="search-wrap">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="participantsSearch" class="search-input"
+                    placeholder="Cerca per nome o cognome..." autocomplete="off">
+            </div>
+
+            <div class="participants-list" id="participantsList">
+                <div class="list-empty">Caricamento...</div>
+            </div>
         </div>
     </div>
 
@@ -567,8 +719,127 @@
         if (e.key === 'Escape') {
             closeModal('modalCamera');
             closeModal('modalCode');
+            closeModal('modalParticipants');
         }
     });
+
+    // =============================================
+    // LISTA PARTECIPANTI
+    // =============================================
+    let allParticipants = [];
+
+    async function openParticipants() {
+        document.getElementById('modalParticipants').style.display = 'flex';
+        document.getElementById('participantsSearch').value = '';
+        renderParticipants('');
+
+        // Carica dati freschi ogni volta
+        const { data, error } = await db
+            .from('ticket')
+            .select('id, codice, stato, utenti(nome, cognome, email)')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            document.getElementById('participantsList').innerHTML =
+                '<div class="list-empty">Errore nel caricamento.</div>';
+            return;
+        }
+
+        allParticipants = (data || []).filter(t => t.utenti);
+        updateMeta();
+        renderParticipants(document.getElementById('participantsSearch').value);
+    }
+
+    function updateMeta() {
+        const total  = allParticipants.length;
+        const entrati = allParticipants.filter(t => t.stato === 'usato').length;
+        document.getElementById('participantsMeta').textContent =
+            total + ' registrati · ' + entrati + ' entrati';
+    }
+
+    function renderParticipants(query) {
+        const listEl = document.getElementById('participantsList');
+        query = query.trim().toLowerCase();
+
+        const filtered = query
+            ? allParticipants.filter(t => {
+                const full = (t.utenti.nome + ' ' + t.utenti.cognome).toLowerCase();
+                return full.includes(query);
+            })
+            : allParticipants;
+
+        if (filtered.length === 0) {
+            listEl.innerHTML = '<div class="list-empty">Nessun risultato.</div>';
+            return;
+        }
+
+        listEl.innerHTML = filtered.map(t => {
+            const nome    = t.utenti.nome || '';
+            const cognome = t.utenti.cognome || '';
+            const email   = t.utenti.email || '';
+            const initials = (nome[0] || '') + (cognome[0] || '');
+            const stato   = t.stato || 'valido';
+            const badgeClass = stato === 'usato' ? 'badge-usato'
+                             : stato === 'annullato' ? 'badge-annullato'
+                             : 'badge-valido';
+            const badgeLabel = stato === 'usato' ? 'Entrato'
+                             : stato === 'annullato' ? 'Annullato'
+                             : 'Atteso';
+            const confirmBtn = stato !== 'usato' && stato !== 'annullato'
+                ? `<button class="btn-confirm-entry" onclick="confermaIngresso('${t.id}', this)">
+                       <span class="material-symbols-outlined" style="font-size:14px;">check_circle</span>
+                       Entra
+                   </button>`
+                : `<span class="participant-badge ${badgeClass}">${badgeLabel}</span>`;
+            return `
+                <div class="participant-row" id="row-${t.id}">
+                    <div class="participant-avatar">${initials.toUpperCase()}</div>
+                    <div class="participant-info">
+                        <div class="participant-name">${nome} ${cognome}</div>
+                        <div class="participant-email">${email}</div>
+                    </div>
+                    ${confirmBtn}
+                </div>`;
+        }).join('');
+    }
+
+    document.getElementById('participantsSearch').addEventListener('input', (e) => {
+        renderParticipants(e.target.value);
+    });
+
+    async function confermaIngresso(ticketId, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">hourglass_empty</span> ...';
+
+        const { error } = await db
+            .from('ticket')
+            .update({ stato: 'usato', scansionato_at: new Date().toISOString() })
+            .eq('id', ticketId);
+
+        if (error) {
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">check_circle</span> Entra';
+            alert('Errore aggiornamento. Riprova.');
+            return;
+        }
+
+        // Aggiorna stato locale
+        const t = allParticipants.find(p => p.id === ticketId);
+        if (t) t.stato = 'usato';
+        updateMeta();
+
+        // Sostituisci bottone con badge "Entrato" nella riga
+        const row = document.getElementById('row-' + ticketId);
+        if (row) {
+            const oldBtn = row.querySelector('.btn-confirm-entry');
+            if (oldBtn) {
+                const badge = document.createElement('span');
+                badge.className = 'participant-badge badge-usato';
+                badge.textContent = 'Entrato';
+                oldBtn.replaceWith(badge);
+            }
+        }
+    }
     </script>
 </body>
 </html>
