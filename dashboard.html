@@ -157,15 +157,34 @@
             position: relative;
             overflow: hidden;
             border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #qrReader {
+            position: absolute !important;
+            inset: 0 !important;
             width: 100% !important;
+            height: 100% !important;
             border: none !important;
             background: transparent !important;
+            overflow: hidden;
         }
-        #qrReader video { border-radius: 16px; }
+        #qrReader video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        #qrReader__scan_region {
+            background: transparent !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
         #qrReader img { display: none; }
-        #qrReader__scan_region { background: transparent !important; }
         #qrReader__dashboard { display: none !important; }
 
         /* INPUT */

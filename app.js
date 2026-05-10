@@ -99,6 +99,19 @@ const FuegoApp = (() => {
 
         if (!ok) return;
 
+        // Controlla limite 300 posti
+        const { count: currentCount } = await db
+            .from('utenti')
+            .select('*', { count: 'exact', head: true });
+        if (currentCount >= 300) {
+            showToast('🔒 Lista chiusa — posti esauriti', 'err');
+            ui.reg.btn.disabled = true;
+            ui.reg.btn.innerHTML = '<span>LISTA CHIUSA 🔒</span><span class="material-symbols-outlined">lock</span>';
+            ui.reg.btn.style.background = 'linear-gradient(135deg, #555, #333)';
+            ui.reg.btn.style.boxShadow = 'none';
+            return;
+        }
+
         // Disabilita bottone durante la richiesta
         ui.reg.btn.disabled = true;
         ui.reg.btn.innerHTML = '<span>INVIO IN CORSO...</span><span class="material-symbols-outlined">hourglass_top</span>';
@@ -123,9 +136,25 @@ const FuegoApp = (() => {
                 return;
             }
 
-            // 2. Successo (il ticket viene creato automaticamente dal trigger)
-            showToast('✓ Iscrizione completata!', 'ok');
-            ui.reg.success.style.display = 'flex';
+            // 2. Legge il tipo ticket assegnato dal trigger
+            const { data: ticketData } = await db
+                .from('ticket')
+                .select('tipo')
+                .eq('utente_id', utente.id)
+                .single();
+
+            const tipo = ticketData?.tipo || 'blu';
+            const isArancione = tipo === 'arancione';
+
+            // Aggiorna overlay in base al tipo
+            const overlay = ui.reg.success;
+            overlay.querySelector('h2').textContent = isArancione ? 'QR 🟠 ARANCIONE' : 'QR 🔵 BLU';
+            overlay.querySelector('p').innerHTML = isArancione
+                ? 'Sei tra i primi 300! Hai ottenuto il <b style="color:#ffaa00">QR Arancione — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
+                : 'Hai ottenuto il <b style="color:#4499ff">QR Blu — 10€ Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
+
+            showToast(isArancione ? '✓ QR Arancione — Gratuito!' : '✓ QR Blu — 10€ Promo Drink', 'ok');
+            overlay.style.display = 'flex';
 
         } catch (e) {
             showToast('Errore di rete. Riprova.', 'err');

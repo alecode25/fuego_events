@@ -130,14 +130,14 @@ body {
   line-height: 1.2;
 }
 .omaggio-text .omaggio-sub {
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   color: rgba(255,180,210,0.70);
   margin-top: 3px;
   line-height: 1.4;
 }
 .omaggio-count {
   background: var(--primary);
-  border-radius: 50px;
+  border-radius: 10px;
   padding: 5px 12px;
   font-family: 'Oswald';
   font-size: 0.8rem;
@@ -412,6 +412,26 @@ input:not([type="checkbox"]):focus {
   background: linear-gradient(90deg, transparent, rgba(255,170,210,0.15), transparent);
   margin: 6px 0 14px;
 }
+
+/* ─── SPOTS BAR ─── */
+.spots-bar-wrap { margin-top: 6px; flex: 1; }
+.spots-bar-track {
+  height: 6px;
+  background: rgba(255,165,0,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.spots-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8800, #ffcc00);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 8px rgba(255,165,0,0.45);
+}
+.spots-bar-label { font-size: 0.62rem; color: #ffaa00; font-weight: 700; letter-spacing: 1px; }
+
 </style>
 </head>
 <body>
@@ -434,7 +454,7 @@ input:not([type="checkbox"]):focus {
     <div class="omaggio-text">
       <div class="omaggio-label">Offerta Esclusiva</div>
       <div class="omaggio-title">Omaggio per le Donne 🎀</div>
-      <div class="omaggio-sub">Le prime 300 donne ricevono un drink in omaggio all'ingresso</div>
+      <div class="omaggio-sub">Le prime 300 donne ricevono il qr gratuito</div>
     </div>
     <div class="omaggio-count">300<br><span style="font-size:0.52rem;font-weight:400;letter-spacing:1px;">posti</span></div>
   </div>
@@ -504,16 +524,19 @@ input:not([type="checkbox"]):focus {
         </div>
         <div class="price-row">
           <div class="qr-badge-orange">QR 🟠</div>
-          <div>
-            <div class="price-title"></div>
-            <div class="price-sold">SOLD OUT</div>
+          <div class="spots-bar-wrap">
+            <div class="price-title" style="margin-bottom:6px;">Omaggio Donne — Gratis</div>
+            <div class="spots-bar-track">
+              <div class="spots-bar-fill" id="spotsBarFill"></div>
+            </div>
+            <div class="spots-bar-label"><span id="spotsCount">—</span> / 300 posti</div>
           </div>
         </div>
         <div class="price-row">
           <div class="qr-badge-blue">QR 🔵</div>
           <div>
             <div class="price-title">10€ — Promo Drink</div>
-            <div class="price-desc">Dopo i primi 400 ci sarà la <b style="color:#4499ff;">10€</b> Promo Drink</div>
+            <div class="price-desc">Dopo i primi 300 ci sarà la <b style="color:#4499ff;">10€</b> Promo Drink</div>
           </div>
         </div>
       </div>
@@ -614,9 +637,35 @@ input:not([type="checkbox"]):focus {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 
+<!-- ─── SPOTS BAR ─── -->
+<script>
+async function loadSpotsCount() {
+  try {
+    const { count, error } = await db
+      .from('utenti')
+      .select('*', { count: 'exact', head: true });
+    if (error) return;
+    const total = 300;
+    const used  = Math.min(count || 0, total);
+    document.getElementById('spotsCount').textContent = used;
+    document.getElementById('spotsBarFill').style.width = ((used / total) * 100) + '%';
+
+    if (count >= total) {
+      const btn = document.getElementById('regSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span>LISTA CHIUSA 🔒</span><span class="material-symbols-outlined">lock</span>';
+      btn.style.background = 'linear-gradient(135deg, #555, #333)';
+      btn.style.boxShadow = 'none';
+      document.getElementById('spotsBarFill').style.background = 'linear-gradient(90deg, #888, #aaa)';
+    }
+  } catch (e) {}
+}
+document.addEventListener('DOMContentLoaded', loadSpotsCount);
+</script>
+
 <!-- ─── COUNTDOWN ─── -->
 <script>
-const EVENT_DATE = new Date('2026-05-09T17:00:00');
+const EVENT_DATE = new Date('2026-05-16T18:00:00');
 function updateCountdown() {
   const diff = EVENT_DATE - new Date();
   if (diff <= 0) {
