@@ -103,7 +103,7 @@ const FuegoApp = (() => {
         const { count: currentCount } = await db
             .from('utenti')
             .select('*', { count: 'exact', head: true });
-        if (currentCount >= 300) {
+        if (currentCount >= 3000) {
             showToast('🔒 Lista chiusa — posti esauriti', 'err');
             ui.reg.btn.disabled = true;
             ui.reg.btn.innerHTML = '<span>LISTA CHIUSA 🔒</span><span class="material-symbols-outlined">lock</span>';
