@@ -145,8 +145,8 @@ const FuegoApp = (() => {
             overlay.querySelector('h2').textContent = isArancione ? 'QR 🟠 ARANCIONE' : 'QR 🔵 BLU';
             overlay.querySelector('p').innerHTML = isArancione
                 ? 'Sei tra i primi 300! Hai ottenuto il <b style="color:#ffaa00">QR Arancione — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
-                : 'Hai ottenuto il <b style="color:#4499ff">QR Blu — 10€ Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
-            showToast(isArancione ? '✓ QR Arancione — Gratuito!' : '✓ QR Blu — 10€ Promo Drink', 'ok');
+                : 'Hai ottenuto il <b style="color:#4499ff">QR Blu —Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
+            showToast(isArancione ? '✓ QR Arancione — Gratuito!' : '✓ QR Blu — Promo Drink', 'ok');
             overlay.style.display = 'flex';
 
         } catch (e) {
