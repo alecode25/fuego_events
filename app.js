@@ -1,10 +1,15 @@
-
 // =============================================
 // SUPABASE CONFIG
 // =============================================
 const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+    auth: {
+        persistSession:    false,
+        autoRefreshToken:  false,
+        detectSessionInUrl: false
+    }
+});
 
 
 // =============================================
@@ -99,60 +104,48 @@ const FuegoApp = (() => {
 
         if (!ok) return;
 
-        // Controlla limite 300 posti
-        const { count: currentCount } = await db
-            .from('utenti')
-            .select('*', { count: 'exact', head: true });
-        if (currentCount >= 3000) {
-            showToast('🔒 Lista chiusa — posti esauriti', 'err');
-            ui.reg.btn.disabled = true;
-            ui.reg.btn.innerHTML = '<span>LISTA CHIUSA 🔒</span><span class="material-symbols-outlined">lock</span>';
-            ui.reg.btn.style.background = 'linear-gradient(135deg, #555, #333)';
-            ui.reg.btn.style.boxShadow = 'none';
-            return;
-        }
-
-        // Disabilita bottone durante la richiesta
         ui.reg.btn.disabled = true;
         ui.reg.btn.innerHTML = '<span>INVIO IN CORSO...</span><span class="material-symbols-outlined">hourglass_top</span>';
 
         try {
-            // 1. Inserisce utente nella tabella utenti
-            const { data: utente, error: errUtente } = await db
-                .from('utenti')
-                .insert({ nome, cognome, email, telefono: tel })
-                .select('id')
-                .single();
+            const { data: result, error: rpcError } = await db.rpc('registra_utente', {
+                p_nome:     nome,
+                p_cognome:  cognome,
+                p_email:    email,
+                p_telefono: tel
+            });
 
-            if (errUtente) {
-                // Email già registrata
-                if (errUtente.code === '23505') {
-                    showToast('⚠️ Email già registrata', 'err');
-                } else {
-                    showToast('Errore: ' + errUtente.message, 'err');
-                }
+            if (rpcError) {
+                showToast('Errore di rete. Riprova.', 'err');
                 ui.reg.btn.disabled = false;
                 ui.reg.btn.innerHTML = '<span>ENTRA IN LISTA</span><span class="material-symbols-outlined">bolt</span>';
                 return;
             }
 
-            // 2. Legge il tipo ticket assegnato dal trigger
-            const { data: ticketData } = await db
-                .from('ticket')
-                .select('tipo')
-                .eq('utente_id', utente.id)
-                .single();
+            if (!result.ok) {
+                if (result.error === 'lista_piena') {
+                    showToast('🔒 Lista chiusa — posti esauriti', 'err');
+                    ui.reg.btn.innerHTML = '<span>LISTA CHIUSA 🔒</span><span class="material-symbols-outlined">lock</span>';
+                    ui.reg.btn.style.background = 'linear-gradient(135deg, #555, #333)';
+                    ui.reg.btn.style.boxShadow = 'none';
+                } else if (result.error === 'email_duplicata') {
+                    showToast('⚠️ Email già registrata', 'err');
+                    ui.reg.btn.disabled = false;
+                    ui.reg.btn.innerHTML = '<span>ENTRA IN LISTA</span><span class="material-symbols-outlined">bolt</span>';
+                } else {
+                    showToast('Errore: ' + result.error, 'err');
+                    ui.reg.btn.disabled = false;
+                    ui.reg.btn.innerHTML = '<span>ENTRA IN LISTA</span><span class="material-symbols-outlined">bolt</span>';
+                }
+                return;
+            }
 
-            const tipo = ticketData?.tipo || 'blu';
-            const isArancione = tipo === 'arancione';
-
-            // Aggiorna overlay in base al tipo
+            const isArancione = result.tipo === 'arancione';
             const overlay = ui.reg.success;
             overlay.querySelector('h2').textContent = isArancione ? 'QR 🟠 ARANCIONE' : 'QR 🔵 BLU';
             overlay.querySelector('p').innerHTML = isArancione
                 ? 'Sei tra i primi 300! Hai ottenuto il <b style="color:#ffaa00">QR Arancione — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
                 : 'Hai ottenuto il <b style="color:#4499ff">QR Blu — 10€ Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
-
             showToast(isArancione ? '✓ QR Arancione — Gratuito!' : '✓ QR Blu — 10€ Promo Drink', 'ok');
             overlay.style.display = 'flex';
 
@@ -179,13 +172,10 @@ const FuegoApp = (() => {
         ui.login.btn.innerHTML = '<span>VERIFICA...</span><span class="material-symbols-outlined">hourglass_top</span>';
 
         try {
-            // Cerca lo scanner con id_scanner e pass corrispondenti
-            const { data, error } = await db
-                .from('scanner')
-                .select('id, id_scanner')
-                .eq('id_scanner', idVal)
-                .eq('pass', passVal)
-                .maybeSingle();
+            const { data: result, error } = await db.rpc('login_scanner', {
+                p_id_scanner: idVal,
+                p_pass:       passVal
+            });
 
             if (error) {
                 showToast('Errore: ' + error.message, 'err');
@@ -194,7 +184,7 @@ const FuegoApp = (() => {
                 return;
             }
 
-            if (!data) {
+            if (!result.ok) {
                 showToast('✕ Credenziali non valide', 'err');
                 setErr('fl-id', true);
                 setErr('fl-pass', true);
@@ -203,21 +193,17 @@ const FuegoApp = (() => {
                 return;
             }
 
-            // Salva sessione
             const session = {
                 token:     crypto.randomUUID(),
-                scannerId: data.id,
-                userId:    data.id_scanner,
-                expiresAt: Date.now() + 8 * 60 * 60 * 1000 // 8 ore
+                scannerId: result.id,
+                userId:    result.id_scanner,
+                expiresAt: Date.now() + 8 * 60 * 60 * 1000
             };
             sessionStorage.setItem('fuego_session', JSON.stringify(session));
 
             showToast('✓ Accesso effettuato', 'ok');
             ui.login.success.style.display = 'flex';
-
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1400);
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1400);
 
         } catch (e) {
             showToast('Errore di rete. Riprova.', 'err');
