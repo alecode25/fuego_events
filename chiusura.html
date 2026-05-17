@@ -528,12 +528,10 @@
             btn.innerHTML = '<span>VERIFICA...</span><span class="material-symbols-outlined">hourglass_top</span>';
 
             try {
-                const { data, error } = await db
-                    .from('scanner')
-                    .select('id, id_scanner')
-                    .eq('id_scanner', idVal)
-                    .eq('pass', passVal)
-                    .maybeSingle();
+                const { data: result, error } = await db.rpc('login_scanner', {
+                    p_id_scanner: idVal,
+                    p_pass:       passVal
+                });
 
                 if (error) {
                     showToast('Errore: ' + error.message, 'err');
@@ -542,7 +540,7 @@
                     return;
                 }
 
-                if (!data) {
+                if (!result.ok) {
                     showToast('✕ Credenziali non valide', 'err');
                     setErr('fl-id', true);
                     setErr('fl-pass', true);
@@ -552,9 +550,9 @@
                 }
 
                 const session = {
-                    token:     crypto.randomUUID(),
-                    scannerId: data.id,
-                    userId:    data.id_scanner,
+                    token:     result.token,
+                    scannerId: result.id,
+                    userId:    result.id_scanner,
                     expiresAt: Date.now() + 8 * 60 * 60 * 1000
                 };
                 sessionStorage.setItem('fuego_session', JSON.stringify(session));
