@@ -5,8 +5,8 @@ const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
     auth: {
-        persistSession:    false,
-        autoRefreshToken:  false,
+        persistSession:     false,
+        autoRefreshToken:   false,
         detectSessionInUrl: false
     }
 });
@@ -144,7 +144,7 @@ const FuegoApp = (() => {
             const overlay = ui.reg.success;
             overlay.querySelector('h2').textContent = isArancione ? 'QR 🟠 ARANCIONE' : 'QR 🔵 BLU';
             overlay.querySelector('p').innerHTML = isArancione
-                ? 'Sei tra i primi 300! Hai ottenuto il <b style="color:#ffaa00">QR Arancione — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
+                ? 'Sei tra i primi 400! Hai ottenuto il <b style="color:#ffaa00">QR Arancione — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
                 : 'Hai ottenuto il <b style="color:#4499ff">QR Blu —Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
             showToast(isArancione ? '✓ QR Arancione — Gratuito!' : '✓ QR Blu — Promo Drink', 'ok');
             overlay.style.display = 'flex';
@@ -157,7 +157,7 @@ const FuegoApp = (() => {
     }
 
     // =============================================
-    // LOGIN STAFF → SUPABASE
+    // LOGIN STAFF → RPC
     // =============================================
     async function handleLogin() {
         const idVal   = ui.login.id.value.trim();
@@ -194,7 +194,7 @@ const FuegoApp = (() => {
             }
 
             const session = {
-                token:     crypto.randomUUID(),
+                token:     result.token,
                 scannerId: result.id,
                 userId:    result.id_scanner,
                 expiresAt: Date.now() + 8 * 60 * 60 * 1000

@@ -543,7 +543,7 @@
     });
 
     // =============================================
-    // VERIFICA BIGLIETTO SU SUPABASE
+    // VERIFICA BIGLIETTO VIA RPC
     // =============================================
     let isVerifying = false;
 
@@ -560,65 +560,42 @@
         resultEl.style.display = 'block';
         resultEl.innerHTML = '⏳ Verifica in corso...';
 
-        // 1. Cerca il ticket
-        const { data: ticket, error } = await db
-            .from('ticket')
-            .select('id, stato, codice, utente_id, utenti(nome, cognome)')
-            .eq('codice', codice)
-            .maybeSingle();
+        const { data: result, error } = await db.rpc('verifica_biglietto', {
+            p_token:  session.token,
+            p_codice: codice
+        });
 
-        if (error) {
+        if (error || !result) {
             mostraRisultato(resultEl, 'err', '✕ Errore di rete');
             isVerifying = false;
             return;
         }
 
-        if (!ticket) {
-            mostraRisultato(resultEl, 'err', '✕ Biglietto non trovato');
+        if (!result.ok) {
+            if (result.error === 'non_trovato') {
+                mostraRisultato(resultEl, 'err', '✕ Biglietto non trovato');
+            } else if (result.error === 'gia_usato') {
+                mostraRisultato(resultEl, 'warn',
+                    '⚠ Biglietto già utilizzato' +
+                    (result.nome ? '<div class="result-name">Intestato a: ' + result.nome + '</div>' : '')
+                );
+            } else if (result.error === 'annullato') {
+                mostraRisultato(resultEl, 'err', '✕ Biglietto annullato');
+            } else if (result.error === 'unauthorized') {
+                mostraRisultato(resultEl, 'err', '✕ Sessione scaduta — rieffettua il login');
+            } else {
+                mostraRisultato(resultEl, 'err', '✕ Errore sconosciuto');
+            }
             isVerifying = false;
             return;
         }
 
-        // 2. Già usato?
-        if (ticket.stato === 'usato') {
-            const nome = ticket.utenti ? ticket.utenti.nome + ' ' + ticket.utenti.cognome : '';
-            mostraRisultato(resultEl, 'warn',
-                '⚠ Biglietto già utilizzato' +
-                (nome ? '<div class="result-name">Intestato a: ' + nome + '</div>' : '')
-            );
-            isVerifying = false;
-            return;
-        }
-
-        // 3. Annullato?
-        if (ticket.stato === 'annullato') {
-            mostraRisultato(resultEl, 'err', '✕ Biglietto annullato');
-            isVerifying = false;
-            return;
-        }
-
-        // 4. Valido → marca come usato
-        const { error: updateErr } = await db
-            .from('ticket')
-            .update({
-                stato: 'usato',
-                scansionato_at: new Date().toISOString()
-            })
-            .eq('id', ticket.id);
-
-        if (updateErr) {
-            mostraRisultato(resultEl, 'err', '✕ Errore aggiornamento');
-            isVerifying = false;
-            return;
-        }
-
-        const nome = ticket.utenti ? ticket.utenti.nome + ' ' + ticket.utenti.cognome : '';
+        const nome = result.nome || '';
         mostraRisultato(resultEl, 'ok',
             '✓ Accesso Consentito' +
             (nome ? '<div class="result-name">Benvenuto/a, ' + nome + '</div>' : '')
         );
 
-        // Countdown visivo prima della prossima scansione
         let secondi = Math.round(SCAN_COOLDOWN / 1000);
         const countdown = setInterval(() => {
             secondi--;
@@ -752,19 +729,18 @@
         document.getElementById('participantsSearch').value = '';
         renderParticipants('');
 
-        // Carica dati freschi ogni volta
-        const { data, error } = await db
-            .from('ticket')
-            .select('id, codice, stato, utenti(nome, cognome, email)')
-            .order('created_at', { ascending: false });
+        // Carica dati freschi ogni volta via RPC
+        const { data: result, error } = await db.rpc('get_partecipanti', {
+            p_token: session.token
+        });
 
-        if (error) {
+        if (error || !result || !result.ok) {
             document.getElementById('participantsList').innerHTML =
                 '<div class="list-empty">Errore nel caricamento.</div>';
             return;
         }
 
-        allParticipants = (data || []).filter(t => t.utenti);
+        allParticipants = result.data || [];
         updateMeta();
         renderParticipants(document.getElementById('participantsSearch').value);
     }
@@ -793,9 +769,9 @@
         }
 
         listEl.innerHTML = filtered.map(t => {
-            const nome    = t.utenti.nome || '';
-            const cognome = t.utenti.cognome || '';
-            const email   = t.utenti.email || '';
+            const nome    = t.nome || '';
+            const cognome = t.cognome || '';
+            const email   = t.email || '';
             const initials = (nome[0] || '') + (cognome[0] || '');
             const stato   = t.stato || 'valido';
             const badgeClass = stato === 'usato' ? 'badge-usato'
@@ -830,12 +806,12 @@
         btn.disabled = true;
         btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">hourglass_empty</span> ...';
 
-        const { error } = await db
-            .from('ticket')
-            .update({ stato: 'usato', scansionato_at: new Date().toISOString() })
-            .eq('id', ticketId);
+        const { data: result, error } = await db.rpc('conferma_ingresso', {
+            p_token:     session.token,
+            p_ticket_id: ticketId
+        });
 
-        if (error) {
+        if (error || !result || !result.ok) {
             btn.disabled = false;
             btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">check_circle</span> Entra';
             alert('Errore aggiornamento. Riprova.');
