@@ -530,7 +530,7 @@
     // =============================================
     const session = JSON.parse(sessionStorage.getItem('fuego_session') || 'null');
 
-    if (!session || Date.now() > session.expiresAt) {
+    if (!session) {
         sessionStorage.removeItem('fuego_session');
         document.getElementById('guardOverlay').classList.add('show');
     } else {

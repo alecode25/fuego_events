@@ -196,8 +196,7 @@ const FuegoApp = (() => {
             const session = {
                 token:     result.token,
                 scannerId: result.id,
-                userId:    result.id_scanner,
-                expiresAt: Date.now() + 8 * 60 * 60 * 1000
+                userId:    result.id_scanner
             };
             sessionStorage.setItem('fuego_session', JSON.stringify(session));
 
