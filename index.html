@@ -670,14 +670,17 @@
                 <div style="font-size:0.85rem; font-weight:700; color:#fff; line-height:1.3;">PRIME 400 PERSONE - QR GRATUITO</div>
             </div>
         </div>
-        <!-- ─── SOLD OUT BADGE ─── -->
-        <div style="display:flex; align-items:center; gap:8px; margin-top:6px; background:rgba(255,140,0,0.08); border:1px solid rgba(255,140,0,0.35); border-radius:10px; padding:7px 12px; backdrop-filter:blur(10px);">
-            <span style="font-size:1rem; line-height:1;">🟠</span>
-            <div>
-                <div style="font-size:0.55rem; font-weight:700; text-transform:uppercase; letter-spacing:3px; color:rgba(255,170,51,0.7); margin-bottom:2px;">QR Gratuito</div>
-                <!-- <div style="font-family:'Oswald'; font-size:0.95rem; font-weight:700; color:#ffaa33; letter-spacing:2px;">SOLD OUT</div> -->
+        <!-- ─── LIVE COUNTER ─── -->
+        <div style="margin-top:8px; background:rgba(255,140,0,0.07); border:1px solid rgba(255,140,0,0.3); border-radius:12px; padding:10px 14px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <div style="background:#ff2e00; border-radius:4px; padding:2px 7px; font-family:'Oswald'; font-size:0.65rem; font-weight:700; letter-spacing:2px; color:#fff;">SOLD OUT</div>
+                </div>
+                <div id="live-count-text" style="font-family:'Oswald'; font-size:0.9rem; font-weight:700; color:#ffcc66; letter-spacing:1px;">400 / 400</div>
             </div>
-            <div id="live-count-text" style="margin-left:auto; background:rgba(255,140,0,0.2); border:1px solid rgba(255,140,0,0.5); border-radius:6px; padding:3px 8px; font-size:0.55rem; font-weight:700; color:#ffcc66; letter-spacing:1px; white-space:nowrap;">0 / 400 posti</div>
+            <div style="background:rgba(255,255,255,0.07); border-radius:99px; height:6px; overflow:hidden;">
+                <div id="live-count-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#ff8c00,#ffcc00); border-radius:99px; transition:width 0.6s ease;"></div>
+            </div>
         </div>
     </div>
 
@@ -798,9 +801,9 @@
                     const { data, error } = await db.rpc('get_registrati_count');
                     if (error || !data) return;
                     const count = data.totale || 0;
-                    document.getElementById('live-count-text').textContent = count.toLocaleString('it-IT') + ' / ' + CAP.toLocaleString('it-IT') + ' posti';
-                    const pct = Math.min((count / CAP) * 100, 100);
-                    document.getElementById('live-count-bar').style.width = pct + '%';
+                    const displayed = Math.min(count, CAP);
+                    document.getElementById('live-count-text').textContent = displayed.toLocaleString('it-IT') + ' / ' + CAP.toLocaleString('it-IT');
+                    document.getElementById('live-count-bar').style.width = '100%';
                 } catch (e) {}
             }
 
