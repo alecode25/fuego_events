@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- REGISTRAZIONI CHIUSE: rimuovi la riga sotto per riaprire -->
-       <meta http-equiv="refresh" content="0; url=chiusura.html"> 
+       <!-- <meta http-equiv="refresh" content="0; url=chiusura.html">  -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUEGO — Guest List & Access</title>
     <link rel="icon" href="logo.jpg" type="image/x-icon">
@@ -675,9 +675,9 @@
             <span style="font-size:1rem; line-height:1;">🟠</span>
             <div>
                 <div style="font-size:0.55rem; font-weight:700; text-transform:uppercase; letter-spacing:3px; color:rgba(255,170,51,0.7); margin-bottom:2px;">QR Gratuito</div>
-                <div style="font-family:'Oswald'; font-size:0.95rem; font-weight:700; color:#ffaa33; letter-spacing:2px;">SOLD OUT</div>
+                <!-- <div style="font-family:'Oswald'; font-size:0.95rem; font-weight:700; color:#ffaa33; letter-spacing:2px;">SOLD OUT</div> -->
             </div>
-            <div style="margin-left:auto; background:rgba(255,140,0,0.2); border:1px solid rgba(255,140,0,0.5); border-radius:6px; padding:3px 8px; font-size:0.55rem; font-weight:700; color:#ffcc66; letter-spacing:1px; white-space:nowrap;">400 / 400</div>
+            <div id="live-count-text" style="margin-left:auto; background:rgba(255,140,0,0.2); border:1px solid rgba(255,140,0,0.5); border-radius:6px; padding:3px 8px; font-size:0.55rem; font-weight:700; color:#ffcc66; letter-spacing:1px; white-space:nowrap;">0 / 400 posti</div>
         </div>
     </div>
 
@@ -817,7 +817,7 @@
     <!-- ─── COUNTDOWN SCRIPT ─── -->
     <script>
         // ⬇️  Cambia questa data con quella dell'evento reale
-        const EVENT_DATE = new Date('2026-05-23T18:00:00');
+        const EVENT_DATE = new Date('2026-05-30T18:00:00');
 
         function updateCountdown() {
             const now = new Date();
