@@ -8,7 +8,7 @@
     <link rel="icon" href="logo.jpg" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:wght@300;400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Poppins:wght@500;600;700&family=Raleway:wght@300;400;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -1219,8 +1219,12 @@
             let W, H, DPR;
             function size() {
                 DPR = Math.min(window.devicePixelRatio || 1, 2);
-                W = window.innerWidth; H = window.innerHeight;
+                W = window.innerWidth;
+                // altezza piena dello schermo: non cambia con la barra del browser → niente stiramento
+                H = Math.max(window.innerHeight, screen.height || 0);
                 c.width = W * DPR; c.height = H * DPR;
+                c.style.width = W + 'px';
+                c.style.height = H + 'px';
                 x.setTransform(DPR, 0, 0, DPR, 0, 0);
             }
             size();
@@ -1248,7 +1252,7 @@
                 };
             }
 
-            const N = Math.min(140, Math.round(W / 3.5));
+            const N = Math.min(130, Math.round(W / 3.5));
             const parts = [];
             for (let i = 0; i < N; i++) parts.push(mk());
 
