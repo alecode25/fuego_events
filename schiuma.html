@@ -424,6 +424,22 @@
             transform: none;
         }
 
+        /* bottone che "respira" di più */
+        @keyframes btn-breathe {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 14px rgba(255,46,0,0.30);
+            }
+            50% {
+                transform: scale(1.035);
+                box-shadow: 0 8px 26px rgba(255,46,0,0.55), 0 0 22px rgba(255,46,0,0.4);
+            }
+        }
+        #regSubmitBtn {
+            animation: btn-breathe 2s ease-in-out infinite;
+        }
+        #regSubmitBtn:disabled { animation: none; }
+
         .footer-link {
             text-align: center;
             padding: 5px;
@@ -625,9 +641,28 @@
             font-size: 1.25rem;
             letter-spacing: 5px;
             text-transform: uppercase;
-            color: var(--primary);
+            color: #fff;
             white-space: nowrap;
-            animation: glow-pulse 2.2s ease-in-out infinite;
+            animation: led-blink 3.5s steps(1, end) infinite;
+        }
+
+        /* LED che si spegne e si riaccende */
+        @keyframes led-blink {
+            0%, 100% {
+                opacity: 1;
+                color: #fff;
+                text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,46,0,0.9), 0 0 40px rgba(255,46,0,0.55);
+            }
+            90%, 93% {            /* spento */
+                opacity: 0.25;
+                color: #5a2018;
+                text-shadow: none;
+            }
+            91%, 94% {            /* riacceso */
+                opacity: 1;
+                color: #fff;
+                text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,46,0,0.9), 0 0 40px rgba(255,46,0,0.55);
+            }
         }
 
         .schiuma-drop {
@@ -655,6 +690,70 @@
             height: 100%;
             display: block;
         }
+
+        /* testo/logo al centro dell'intro */
+        #introTitle {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        #introTitle .it-top {
+            font-family: 'Oswald';
+            font-size: 1.6rem;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: var(--primary);
+            opacity: 0;
+            transform: translateY(-10px);
+            text-shadow: 0 0 16px rgba(255, 46, 0, 0.8), 0 0 36px rgba(255,46,0,0.4);
+            animation: introSub 2.4s ease forwards;
+        }
+
+        #introTitle .it-sub {
+            font-family: 'Oswald';
+            font-size: 2.6rem;
+            line-height: 1.05;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #fff;
+            opacity: 0;
+            transform: translateY(12px) scale(0.9);
+            animation: introBig 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, neon-shimmer 2.8s linear infinite;
+            animation-delay: 0.35s, 0.9s;
+        }
+
+        /* striscia neon che sbrilluccica */
+        @keyframes neon-shimmer {
+            0%, 100% {
+                text-shadow: 0 0 6px #fff, 0 0 14px rgba(255,46,0,0.9), 0 0 30px rgba(255,46,0,0.6), 0 0 52px rgba(168,85,247,0.5);
+            }
+            45% {
+                text-shadow: 0 0 10px #fff, 0 0 26px rgba(255,46,0,1), 0 0 50px rgba(255,46,0,0.8), 0 0 80px rgba(168,85,247,0.7);
+            }
+            48% { text-shadow: 0 0 2px #fff; opacity: 0.7; }
+            50% { text-shadow: 0 0 10px #fff, 0 0 26px rgba(255,46,0,1); opacity: 1; }
+        }
+
+        @keyframes introSub {
+            0%   { opacity: 0; transform: translateY(-10px); letter-spacing: 8px; }
+            30%  { opacity: 1; transform: translateY(0); }
+            100% { opacity: 1; letter-spacing: 11px; }
+        }
+
+        @keyframes introBig {
+            0%   { opacity: 0; transform: translateY(12px) scale(0.9); }
+            30%  { opacity: 1; transform: translateY(0) scale(1.04); }
+            45%  { transform: scale(1); }
+            70%  { transform: scale(1.03); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 
@@ -663,7 +762,13 @@
     <div class="ambient-bg"></div>
     <div class="noise"></div>
     <canvas id="foamCanvas"></canvas>
-    <div id="intro"><canvas id="introCanvas"></canvas></div>
+    <div id="intro">
+        <canvas id="introCanvas"></canvas>
+        <div id="introTitle">
+           <span class="it-sub"></span>
+            <span class="it-sub">Schiuma Party</span>
+        </div>
+    </div>
     <div class="toast" id="toast"></div>
 
     <!-- ─── COUNTDOWN ─── -->
@@ -729,9 +834,7 @@
                 <h2 class="form-title">Guest List</h2>
 
                 <div class="schiuma-label">
-                    <span class="schiuma-drop">💦</span>
                     <span>Schiuma Party</span>
-                    <span class="schiuma-drop">💦</span>
                 </div>
 
                 
@@ -1000,6 +1103,8 @@
                     const hit = b.r + 14; // tolleranza per il dito
                     if (dx * dx + dy * dy <= hit * hit) {
                         createBurst(bx, b.y, b.r, SHEEN[b.c1], SHEEN[b.c2]);
+                        // vibrazione breve (dove supportata: Android/Chrome); le grandi vibrano un po' di più
+                        if (navigator.vibrate) navigator.vibrate(b.big ? 35 : 20);
                         Object.assign(b, makeBubble(true, b.big)); // ne rinasce una uguale in fondo
                         break; // una sola per tocco
                     }
@@ -1135,7 +1240,7 @@
                 };
             }
 
-            const N = Math.min(80, Math.round(W / 6));
+            const N = Math.min(140, Math.round(W / 3.5));
             const parts = [];
             for (let i = 0; i < N; i++) parts.push(mk());
 
@@ -1162,7 +1267,7 @@
             }
 
             const start = performance.now();
-            const DURATION = 2400; // ms di raffica, poi sfuma (~3s totali)
+            const DURATION = 2700; // ms di raffica, poi sfuma (~4s totali)
             let fading = false, done = false;
             function frame(now) {
                 const elapsed = now - start;
