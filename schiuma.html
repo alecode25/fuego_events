@@ -83,9 +83,11 @@
         /* bolle che salgono SOPRA il form */
         #foamCanvas {
             position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             pointer-events: none;
             z-index: 2;
         }
@@ -765,8 +767,8 @@
     <div id="intro">
         <canvas id="introCanvas"></canvas>
         <div id="introTitle">
-           <span class="it-sub"></span>
-            <span class="it-sub">Schiuma Party</span>
+            <span class="it-top">FUEGO presenta</span>
+            <span class="it-sub">Lo Schiuma Party</span>
         </div>
     </div>
     <div class="toast" id="toast"></div>
@@ -1027,20 +1029,26 @@
                 };
             }
 
+            // Altezza STABILE: usiamo la più grande altezza vista (schermo pieno).
+            // Così quando la barra del browser appare/sparisce durante lo scroll,
+            // il canvas non viene stirato/schiacciato e le bolle restano rotonde.
+            let stableH = 0;
             function setup() {
                 DPR = Math.min(window.devicePixelRatio || 1, 2);
                 W = window.innerWidth;
-                H = window.innerHeight;
+                stableH = Math.max(stableH, window.innerHeight, screen.height || 0);
+                H = stableH;
                 canvas.width = W * DPR;
                 canvas.height = H * DPR;
+                canvas.style.height = H + 'px';
                 ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
             }
 
-            // Sul telefono la barra degli indirizzi che appare/sparisce durante lo scroll
-            // cambia solo l'ALTEZZA: ridisegniamo solo se cambia la LARGHEZZA (no flicker).
+            // Ridisegniamo solo se cambia la LARGHEZZA (rotazione), mai per lo scroll.
             function onResize() {
                 if (window.innerWidth === lastW) return;
                 lastW = window.innerWidth;
+                stableH = 0;       // ricalcola l'altezza piena dopo una rotazione
                 setup();
             }
 
