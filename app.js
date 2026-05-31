@@ -46,6 +46,12 @@ const FuegoApp = (() => {
             pass:       document.getElementById('password'),
             togglePass: document.getElementById('togglePass'),
             success:    document.getElementById('loginSuccess'),
+        },
+        modal: {
+            wrap:  document.getElementById('emailConfirmModal'),
+            email: document.getElementById('emailConfirmValue'),
+            ok:    document.getElementById('emailConfirmOk'),
+            back:  document.getElementById('emailConfirmBack'),
         }
     };
 
@@ -70,7 +76,7 @@ const FuegoApp = (() => {
     // =============================================
     // REGISTRAZIONE → SUPABASE
     // =============================================
-    async function handleRegister() {
+    function handleRegister() {
         const nome    = ui.reg.nome.value.trim();
         const cognome = ui.reg.cognome.value.trim();
         const tel     = ui.reg.tel.value.trim();
@@ -104,6 +110,18 @@ const FuegoApp = (() => {
 
         if (!ok) return;
 
+        // Mostra modal conferma email
+        ui.modal.email.textContent = email;
+        ui.modal.wrap.style.display = 'flex';
+    }
+
+    async function doRegister() {
+        const nome    = ui.reg.nome.value.trim();
+        const cognome = ui.reg.cognome.value.trim();
+        const tel     = ui.reg.tel.value.trim();
+        const email   = ui.reg.email.value.trim();
+
+        ui.modal.wrap.style.display = 'none';
         ui.reg.btn.disabled = true;
         ui.reg.btn.innerHTML = '<span>INVIO IN CORSO...</span><span class="material-symbols-outlined">hourglass_top</span>';
 
@@ -140,13 +158,13 @@ const FuegoApp = (() => {
                 return;
             }
 
-            const isArancione = result.tipo === 'arancione';
+            const isVerde = result.tipo === 'verde';
             const overlay = ui.reg.success;
-            overlay.querySelector('h2').textContent = isArancione ? 'QR 🟠 ARANCIONE' : 'QR 🔵 BLU';
-            overlay.querySelector('p').innerHTML = isArancione
-                ? 'Sei tra i primi 400! Hai ottenuto il <b style="color:#ffaa00">QR Arancione — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
-                : 'Hai ottenuto il <b style="color:#4499ff">QR Blu —Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
-            showToast(isArancione ? '✓ QR Arancione — Gratuito!' : '✓ QR Blu — Promo Drink', 'ok');
+            overlay.querySelector('h2').textContent = isVerde ? 'QR 🟢 VERDE' : 'QR 🟣 VIOLA';
+            overlay.querySelector('p').innerHTML = isVerde
+                ? 'Sei tra i primi 400! Hai ottenuto il <b style="color:#22cc66">Biglietto Verde — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
+                : 'Hai ottenuto il <b style="color:#aa44ff">Biglietto Viola — Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
+            showToast(isVerde ? '✓ Biglietto Verde — Gratuito!' : '✓ Biglietto Viola — Promo Drink', 'ok');
             overlay.style.display = 'flex';
 
         } catch (e) {
@@ -227,6 +245,14 @@ const FuegoApp = (() => {
 
             // Submit registrazione
             ui.reg.btn.addEventListener('click', handleRegister);
+
+            // Modal conferma email
+            ui.modal.ok.addEventListener('click', doRegister);
+            ui.modal.back.addEventListener('click', () => {
+                ui.modal.wrap.style.display = 'none';
+                ui.reg.email.focus();
+                ui.reg.email.select();
+            });
 
             // Submit login
             ui.login.btn.addEventListener('click', handleLogin);

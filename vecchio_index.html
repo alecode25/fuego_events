@@ -3,14 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- REGISTRAZIONI CHIUSE: rimuovi la riga sotto per riaprire -->
+       <meta http-equiv="refresh" content="0; url=chiusura.html"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="refresh" content="0; url=chiusura.html"> 
     <title>FUEGO — Guest List & Access</title>
     <link rel="icon" href="logo.jpg" type="image/x-icon">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Poppins:wght@500;600;700&family=Raleway:wght@300;400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:wght@300;400;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -79,19 +79,6 @@
             opacity: 0.2;
             pointer-events: none;
             z-index: 0;
-        }
-
-        /* ─── SCHIUMA PARTY (canvas) ─── */
-        /* bolle che salgono SOPRA il form */
-        #foamCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            pointer-events: none;
-            z-index: 2;
         }
 
         /* ─── COUNTDOWN BANNER ─── */
@@ -265,6 +252,7 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
 
+        /* When flipped, the back face uses absolute positioning */
         .card-back {
             position: absolute;
             inset: 0;
@@ -278,6 +266,7 @@
             display: none;
         }
 
+        /* Front face scrollable too */
         .card-front {
             overflow-y: auto;
             scrollbar-width: none;
@@ -427,22 +416,6 @@
             cursor: not-allowed;
             transform: none;
         }
-
-        /* bottone che "respira" di più */
-        @keyframes btn-breathe {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 4px 14px rgba(255,46,0,0.30);
-            }
-            50% {
-                transform: scale(1.035);
-                box-shadow: 0 8px 26px rgba(255,46,0,0.55), 0 0 22px rgba(255,46,0,0.4);
-            }
-        }
-        #regSubmitBtn {
-            animation: btn-breathe 2s ease-in-out infinite;
-        }
-        #regSubmitBtn:disabled { animation: none; }
 
         .footer-link {
             text-align: center;
@@ -610,154 +583,6 @@
             color: #fff;
             font-size: 0.95rem;
         }
-
-        @keyframes glow-pulse {
-            0%, 100% { text-shadow: 0 0 8px rgba(255,46,0,0.8), 0 0 22px rgba(255,46,0,0.4); }
-            50% { text-shadow: 0 0 18px rgba(255,46,0,1), 0 0 40px rgba(255,46,0,0.65), 0 0 60px rgba(255,80,0,0.3); }
-        }
-
-        @keyframes drip {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(3px); }
-        }
-
-        .schiuma-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .schiuma-label::before,
-        .schiuma-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(255,46,0,0.55));
-        }
-
-        .schiuma-label::after {
-            background: linear-gradient(to left, transparent, rgba(255,46,0,0.55));
-        }
-
-        .schiuma-label span {
-            font-family: 'Oswald';
-            font-size: 1.25rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: #fff;
-            white-space: nowrap;
-            animation: led-blink 3.5s steps(1, end) infinite;
-        }
-
-        /* LED che si spegne e si riaccende */
-        @keyframes led-blink {
-            0%, 100% {
-                opacity: 1;
-                color: #fff;
-                text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,46,0,0.9), 0 0 40px rgba(255,46,0,0.55);
-            }
-            90%, 93% {            /* spento */
-                opacity: 0.25;
-                color: #5a2018;
-                text-shadow: none;
-            }
-            91%, 94% {            /* riacceso */
-                opacity: 1;
-                color: #fff;
-                text-shadow: 0 0 8px #fff, 0 0 20px rgba(255,46,0,0.9), 0 0 40px rgba(255,46,0,0.55);
-            }
-        }
-
-        .schiuma-drop {
-            font-size: 1rem;
-            animation: drip 2s ease-in-out infinite;
-            display: inline-block;
-        }
-
-        /* ─── INTRO: raffica di bolle all'apertura ─── */
-        #intro {
-            position: fixed;
-            inset: 0;
-            z-index: 60;
-            background: #050507;
-            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #intro.hide {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #introCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* testo/logo al centro dell'intro */
-        #introTitle {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            pointer-events: none;
-            text-align: center;
-        }
-
-        #introTitle .it-top {
-            font-family: 'Oswald';
-            font-size: 1.6rem;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            color: var(--primary);
-            opacity: 0;
-            transform: translateY(-10px);
-            text-shadow: 0 0 16px rgba(255, 46, 0, 0.8), 0 0 36px rgba(255,46,0,0.4);
-            animation: introSub 2.4s ease forwards;
-        }
-
-        #introTitle .it-sub {
-            font-family: 'Oswald';
-            font-size: 2.6rem;
-            line-height: 1.05;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #fff;
-            opacity: 0;
-            transform: translateY(12px) scale(0.9);
-            animation: introBig 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, neon-shimmer 2.8s linear infinite;
-            animation-delay: 0.35s, 0.9s;
-        }
-
-        /* striscia neon che sbrilluccica */
-        @keyframes neon-shimmer {
-            0%, 100% {
-                text-shadow: 0 0 6px #fff, 0 0 14px rgba(255,46,0,0.9), 0 0 30px rgba(255,46,0,0.6), 0 0 52px rgba(168,85,247,0.5);
-            }
-            45% {
-                text-shadow: 0 0 10px #fff, 0 0 26px rgba(255,46,0,1), 0 0 50px rgba(255,46,0,0.8), 0 0 80px rgba(168,85,247,0.7);
-            }
-            48% { text-shadow: 0 0 2px #fff; opacity: 0.7; }
-            50% { text-shadow: 0 0 10px #fff, 0 0 26px rgba(255,46,0,1); opacity: 1; }
-        }
-
-        @keyframes introSub {
-            0%   { opacity: 0; transform: translateY(-10px); letter-spacing: 8px; }
-            30%  { opacity: 1; transform: translateY(0); }
-            100% { opacity: 1; letter-spacing: 11px; }
-        }
-
-        @keyframes introBig {
-            0%   { opacity: 0; transform: translateY(12px) scale(0.9); }
-            30%  { opacity: 1; transform: translateY(0) scale(1.04); }
-            45%  { transform: scale(1); }
-            70%  { transform: scale(1.03); }
-            100% { opacity: 1; transform: scale(1); }
-        }
     </style>
 </head>
 
@@ -765,31 +590,7 @@
 
     <div class="ambient-bg"></div>
     <div class="noise"></div>
-    <canvas id="foamCanvas"></canvas>
-    <div id="intro">
-        <canvas id="introCanvas"></canvas>
-        <div id="introTitle">
-            <span class="it-top">FUEGO presenta</span>
-            <span class="it-sub">Lo Schiuma Party</span>
-        </div>
-    </div>
     <div class="toast" id="toast"></div>
-
-    <!-- ─── MODAL CONFERMA EMAIL ─── -->
-    <div id="emailConfirmModal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(5,5,7,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); align-items:center; justify-content:center; padding:20px;">
-        <div style="background:rgba(12,10,14,0.99); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:28px 22px; max-width:360px; width:100%; text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.7);">
-            <span class="material-symbols-outlined" style="font-size:2.6rem; color:var(--primary); display:block; margin-bottom:10px;">mark_email_unread</span>
-            <h3 style="font-family:'Oswald'; font-size:1.35rem; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">Conferma Email</h3>
-            <p style="font-size:0.72rem; color:#888; line-height:1.6; margin-bottom:16px;">Invieremo il biglietto a questo indirizzo.<br>È corretto?</p>
-            <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.13); border-radius:12px; padding:13px 16px; margin-bottom:22px; word-break:break-all;">
-                <span id="emailConfirmValue" style="font-size:0.88rem; font-weight:600; color:#fff;"></span>
-            </div>
-            <div style="display:flex; gap:10px;">
-                <button id="emailConfirmBack" style="flex:1; padding:14px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:12px; color:#bbb; font-family:'Oswald'; font-size:0.85rem; letter-spacing:1px; cursor:pointer; transition:background 0.2s;">MODIFICA</button>
-                <button id="emailConfirmOk" style="flex:2; padding:14px 10px; background:var(--primary); border:none; border-radius:12px; color:#fff; font-family:'Oswald'; font-size:0.95rem; letter-spacing:1px; cursor:pointer; transition:opacity 0.2s;">SÌ, INVIA</button>
-            </div>
-        </div>
-    </div>
 
     <!-- ─── COUNTDOWN ─── -->
     <div class="countdown-banner">
@@ -853,10 +654,6 @@
 
                 <h2 class="form-title">Guest List</h2>
 
-                <div class="schiuma-label">
-                    <span>Schiuma Party</span>
-                </div>
-
                 
                 <!-- Prezzi -->
 <div style="border: 1.5px solid rgba(255,46,0,0.55); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; background: rgba(255,46,0,0.05); backdrop-filter: blur(10px);">
@@ -868,28 +665,30 @@
 
     <div style="padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.07); margin-bottom:10px;">
         <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:8px;">
-            <div style="background:rgba(20,242,12,0.15); border:1px solid #14f20c; border-radius:8px; padding:4px 9px; font-size:0.6rem; font-weight:700; color:#14f20c; white-space:nowrap; flex-shrink:0; margin-top:2px;">QR 🟢</div>
+            <div style="background:rgba(255,140,0,0.15); border:1px solid #ff8c00; border-radius:8px; padding:4px 9px; font-size:0.6rem; font-weight:700; color:#ffaa33; white-space:nowrap; flex-shrink:0; margin-top:2px;">QR 🟠</div>
             <div>
                 <div style="font-size:0.85rem; font-weight:700; color:#fff; line-height:1.3;">PRIME 400 PERSONE - QR GRATUITO</div>
             </div>
         </div>
-        <!-- Barra posti verdi -->
-        <div style="margin-top:6px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <span style="font-size:0.5rem; text-transform:uppercase; letter-spacing:2px; color:#666;">Posti occupati</span>
-                <span id="verde-count" style="font-size:0.55rem; font-weight:700; color:#14f20c; font-family:'Oswald';">— / 400</span>
+        <!-- ─── LIVE COUNTER ─── -->
+        <div style="margin-top:8px; background:rgba(255,140,0,0.07); border:1px solid rgba(255,140,0,0.3); border-radius:12px; padding:10px 14px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <div style="background:#ff2e00; border-radius:4px; padding:2px 7px; font-family:'Oswald'; font-size:0.65rem; font-weight:700; letter-spacing:2px; color:#fff;">SOLD OUT</div>
+                </div>
+                <div id="live-count-text" style="font-family:'Oswald'; font-size:0.9rem; font-weight:700; color:#ffcc66; letter-spacing:1px;">400 / 400</div>
             </div>
-            <div style="background:rgba(255,255,255,0.07); border-radius:20px; height:5px; overflow:hidden;">
-                <div id="verde-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#14f20c,#22cc66); border-radius:20px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
+            <div style="background:rgba(255,255,255,0.07); border-radius:99px; height:6px; overflow:hidden;">
+                <div id="live-count-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#ff8c00,#ffcc00); border-radius:99px; transition:width 0.6s ease;"></div>
             </div>
         </div>
     </div>
 
     <div style="display:flex; align-items:flex-start; gap:10px; padding-top: 10px;">
-        <div style="background:rgba(168,85,247,0.15); border:1px solid #a855f7; border-radius:8px; padding:4px 9px; font-size:0.6rem; font-weight:700; color:#a855f7; white-space:nowrap; flex-shrink:0; margin-top:2px;">QR 🟣</div>
+        <div style="background:rgba(0,102,255,0.15); border:1px solid #0066ff; border-radius:8px; padding:4px 9px; font-size:0.6rem; font-weight:700; color:#4499ff; white-space:nowrap; flex-shrink:0; margin-top:2px;">QR 🔵</div>
         <div>
             <div style="font-size:0.85rem; font-weight:700; color:#fff; line-height:1.3;">PROMO 10€</div>
-            <div style="font-size:0.65rem; color:#aaa; margin-top:2px;">Biglietto <b style="color:#a855f7;">viola</b> · 1 Drink incluso</div>
+            <div style="font-size:0.65rem; color:#aaa; margin-top:2px;">Biglietto <b style="color:#4499ff;">blu</b> · 1 Drink incluso</div>
         </div>
     </div>
 
@@ -992,223 +791,36 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 
-    <!-- ─── SCHIUMA PARTY · BOLLE CHE SALGONO SUL FORM (canvas) ─── -->
+    <!-- ─── LIVE COUNTER SCRIPT ─── -->
     <script>
-        (function () {
-            const canvas = document.getElementById('foamCanvas');
-            const ctx = canvas.getContext('2d');
-            let W, H, DPR, lastW = -1;
+        (function initLiveCounter() {
+            const CAP = 400;
 
-            // quante bolle salgono sul form (cambia qui per averne di più o di meno)
-            const COUNT = 7;
-            const BIG = 3; // di queste, quante grandi
-
-            // tonalità arcobaleno tenui per il film di sapone
-            const SHEEN = [
-                'rgba(255,120,180,', 'rgba(120,200,255,',
-                'rgba(180,255,200,', 'rgba(255,230,140,',
-                'rgba(200,160,255,'
-            ];
-
-            let bubbles = [];
-            let splashes = []; // particelle e anelli dell'esplosione
-
-            function createBurst(x, y, R, c1, c2) {
-                // anello che si espande: il film della bolla che si rompe
-                splashes.push({ ring: true, x, y, r: R * 0.6, maxR: R * 2.3, alpha: 0.9, c: c1 });
-                // goccioline che schizzano fuori
-                const n = Math.min(22, Math.round(8 + R / 3));
-                for (let i = 0; i < n; i++) {
-                    const a = (Math.PI * 2 * i) / n + Math.random() * 0.5;
-                    const sp = (1.5 + Math.random() * 3.5) * (1 + R / 60);
-                    splashes.push({
-                        ring: false,
-                        x, y,
-                        vx: Math.cos(a) * sp,
-                        vy: Math.sin(a) * sp - 1,
-                        r: 2 + Math.random() * (R * 0.12),
-                        alpha: 0.9,
-                        c: Math.random() < 0.5 ? c1 : c2
-                    });
-                }
+            async function fetchCount() {
+                try {
+                    const { data, error } = await db.rpc('get_registrati_count');
+                    if (error || !data) return;
+                    const count = data.totale || 0;
+                    const displayed = Math.min(count, CAP);
+                    document.getElementById('live-count-text').textContent = displayed.toLocaleString('it-IT') + ' / ' + CAP.toLocaleString('it-IT');
+                    document.getElementById('live-count-bar').style.width = '100%';
+                } catch (e) {}
             }
 
-            function makeBubble(fromBottom, big) {
-                const scale = Math.min(1, W / 600);
-                const r = big
-                    ? (34 + Math.random() * 16) * Math.max(0.6, scale)
-                    : (12 + Math.random() * 16) * Math.max(0.6, scale);
-                return {
-                    big: !!big,
-                    popping: false,
-                    x: Math.random() * W,
-                    y: fromBottom ? H + r + Math.random() * H * 0.5 : Math.random() * H,
-                    r,
-                    vy: -(0.12 + Math.random() * 0.22) * (big ? 0.8 : 1),
-                    t: Math.random() * 1000,
-                    wobF: 0.5 + Math.random() * 1.2,
-                    wobA: 8 + Math.random() * 20,
-                    hue: Math.random() * Math.PI * 2,
-                    spin: (Math.random() - 0.5) * 0.02,
-                    alpha: 0,
-                    targetAlpha: 0.55 + Math.random() * 0.4,
-                    c1: Math.floor(Math.random() * SHEEN.length),
-                    c2: Math.floor(Math.random() * SHEEN.length)
-                };
-            }
+            fetchCount();
 
-            // Altezza STABILE: usiamo la più grande altezza vista (schermo pieno).
-            // Così quando la barra del browser appare/sparisce durante lo scroll,
-            // il canvas non viene stirato/schiacciato e le bolle restano rotonde.
-            let stableH = 0;
-            function setup() {
-                DPR = Math.min(window.devicePixelRatio || 1, 2);
-                W = window.innerWidth;
-                stableH = Math.max(stableH, window.innerHeight, screen.height || 0);
-                H = stableH;
-                canvas.width = W * DPR;
-                canvas.height = H * DPR;
-                canvas.style.height = H + 'px';
-                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-            }
+            db.channel('live-counter')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'utenti' }, fetchCount)
+                .subscribe();
 
-            // Ridisegniamo solo se cambia la LARGHEZZA (rotazione), mai per lo scroll.
-            function onResize() {
-                if (window.innerWidth === lastW) return;
-                lastW = window.innerWidth;
-                stableH = 0;       // ricalcola l'altezza piena dopo una rotazione
-                setup();
-            }
-
-            function drawBubble(b) {
-                const x = b.x + Math.sin(b.t * b.wobF) * b.wobA;
-                const y = b.y;
-                const r = b.r;
-
-                ctx.save();
-                ctx.globalAlpha = b.alpha;
-
-                const body = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
-                body.addColorStop(0, 'rgba(255,255,255,0.10)');
-                body.addColorStop(0.7, 'rgba(255,255,255,0.03)');
-                body.addColorStop(1, 'rgba(255,255,255,0.16)');
-                ctx.beginPath();
-                ctx.arc(x, y, r, 0, Math.PI * 2);
-                ctx.fillStyle = body;
-                ctx.fill();
-
-                const rim = ctx.createConicGradient(b.hue, x, y);
-                const c1 = SHEEN[b.c1], c2 = SHEEN[b.c2];
-                rim.addColorStop(0, c1 + '0)');
-                rim.addColorStop(0.25, c1 + '0.55)');
-                rim.addColorStop(0.5, c2 + '0)');
-                rim.addColorStop(0.75, c2 + '0.55)');
-                rim.addColorStop(1, c1 + '0)');
-                ctx.lineWidth = Math.max(1, r * 0.10);
-                ctx.beginPath();
-                ctx.arc(x, y, r - ctx.lineWidth * 0.5, 0, Math.PI * 2);
-                ctx.strokeStyle = rim;
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(x - r * 0.32, y - r * 0.34, r * 0.18, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255,255,255,0.85)';
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(x + r * 0.28, y + r * 0.30, r * 0.07, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255,255,255,0.5)';
-                ctx.fill();
-
-                ctx.restore();
-            }
-
-            // init
-            lastW = window.innerWidth;
-            setup();
-            for (let i = 0; i < COUNT; i++) bubbles.push(makeBubble(false, i < BIG));
-            window.addEventListener('resize', onResize);
-            window.addEventListener('orientationchange', () => { lastW = -1; onResize(); });
-
-            // Tocca/clicca una bolla per farla esplodere (il form resta cliccabile:
-            // ascoltiamo il tocco sulla pagina senza bloccare nulla).
-            function popAt(px, py) {
-                for (const b of bubbles) {
-                    const bx = b.x + Math.sin(b.t * b.wobF) * b.wobA;
-                    const dx = px - bx, dy = py - b.y;
-                    const hit = b.r + 14; // tolleranza per il dito
-                    if (dx * dx + dy * dy <= hit * hit) {
-                        createBurst(bx, b.y, b.r, SHEEN[b.c1], SHEEN[b.c2]);
-                        // vibrazione breve (dove supportata: Android/Chrome); le grandi vibrano un po' di più
-                        if (navigator.vibrate) navigator.vibrate(b.big ? 35 : 20);
-                        Object.assign(b, makeBubble(true, b.big)); // ne rinasce una uguale in fondo
-                        break; // una sola per tocco
-                    }
-                }
-            }
-            window.addEventListener('pointerdown', (e) => popAt(e.clientX, e.clientY));
-
-            function drawSplash(s) {
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, s.alpha);
-                if (s.ring) {
-                    ctx.lineWidth = 2;
-                    ctx.strokeStyle = s.c + '0.8)';
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-                    ctx.stroke();
-                } else {
-                    ctx.beginPath();
-                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-                    ctx.fillStyle = s.c + '0.9)';
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(s.x - s.r * 0.3, s.y - s.r * 0.3, s.r * 0.35, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-                    ctx.fill();
-                }
-                ctx.restore();
-            }
-
-            function loop() {
-                ctx.clearRect(0, 0, W, H);
-                for (const b of bubbles) {
-                    b.y += b.vy;
-                    b.t += 0.016;
-                    b.hue += b.spin;
-                    if (b.alpha < b.targetAlpha) b.alpha += 0.01;
-                    if (b.y < -b.r - 20) Object.assign(b, makeBubble(true, b.big));
-                    drawBubble(b);
-                }
-                // esplosioni: anello + goccioline con gravità
-                for (let i = splashes.length - 1; i >= 0; i--) {
-                    const s = splashes[i];
-                    if (s.ring) {
-                        s.r += (s.maxR - s.r) * 0.22;
-                        s.alpha *= 0.86;
-                    } else {
-                        s.x += s.vx;
-                        s.y += s.vy;
-                        s.vy += 0.12;   // gravità
-                        s.vx *= 0.99;
-                        s.r *= 0.975;
-                        s.alpha *= 0.94;
-                    }
-                    drawSplash(s);
-                    if (s.alpha < 0.04) splashes.splice(i, 1);
-                }
-                requestAnimationFrame(loop);
-            }
-            loop();
+            setInterval(fetchCount, 30000);
         })();
     </script>
 
-
-
     <!-- ─── COUNTDOWN SCRIPT ─── -->
     <script>
-        // ⬇️  Data dell'evento: Schiuma Party 6 giugno 2026 ore 18:00
-        const EVENT_DATE = new Date('2026-06-06T18:00:00');
+        // ⬇️  Cambia questa data con quella dell'evento reale
+        const EVENT_DATE = new Date('2026-05-30T18:00:00');
 
         function updateCountdown() {
             const now = new Date();
@@ -1236,112 +848,6 @@
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
-    </script>
-    <!-- ─── BARRA POSTI VERDI (realtime) ─── -->
-    <script>
-        async function updateVerdeBar() {
-            try {
-                const { data: count } = await db.rpc('get_verde_count');
-                const filled = Math.min(count || 0, 400);
-                const pct = (filled / 400) * 100;
-                document.getElementById('verde-bar').style.width = pct + '%';
-                document.getElementById('verde-count').textContent = filled + ' / 400';
-            } catch (e) {}
-        }
-
-        updateVerdeBar();
-        setInterval(updateVerdeBar, 5000);
-    </script>
-
-    <!-- ─── INTRO · RAFFICA DI BOLLE (~2s) ─── -->
-    <script>
-        (function () {
-            const intro = document.getElementById('intro');
-            const c = document.getElementById('introCanvas');
-            if (!intro || !c) return;
-            const x = c.getContext('2d');
-            let W, H, DPR;
-            function size() {
-                DPR = Math.min(window.devicePixelRatio || 1, 2);
-                W = window.innerWidth;
-                // altezza piena dello schermo: non cambia con la barra del browser → niente stiramento
-                H = Math.max(window.innerHeight, screen.height || 0);
-                c.width = W * DPR; c.height = H * DPR;
-                c.style.width = W + 'px';
-                c.style.height = H + 'px';
-                x.setTransform(DPR, 0, 0, DPR, 0, 0);
-            }
-            size();
-
-            const SHEEN = [
-                'rgba(255,120,180,', 'rgba(120,200,255,',
-                'rgba(180,255,200,', 'rgba(255,230,140,',
-                'rgba(200,160,255,'
-            ];
-
-            function mk() {
-                const r = 6 + Math.random() * 26;
-                return {
-                    x: Math.random() * W,
-                    y: H + r + Math.random() * H,
-                    r,
-                    vy: -(2.5 + Math.random() * 5),     // salgono veloci
-                    t: Math.random() * 1000,
-                    wobF: 0.5 + Math.random() * 1.5,
-                    wobA: 6 + Math.random() * 16,
-                    hue: Math.random() * Math.PI * 2,
-                    spin: (Math.random() - 0.5) * 0.05,
-                    c1: Math.floor(Math.random() * SHEEN.length),
-                    c2: Math.floor(Math.random() * SHEEN.length)
-                };
-            }
-
-            const N = Math.min(130, Math.round(W / 3.5));
-            const parts = [];
-            for (let i = 0; i < N; i++) parts.push(mk());
-
-            function drawB(b) {
-                const px = b.x + Math.sin(b.t * b.wobF) * b.wobA;
-                const py = b.y, r = b.r;
-                x.save();
-                x.globalAlpha = 0.85;
-                const body = x.createRadialGradient(px - r * 0.3, py - r * 0.3, r * 0.1, px, py, r);
-                body.addColorStop(0, 'rgba(255,255,255,0.10)');
-                body.addColorStop(0.7, 'rgba(255,255,255,0.03)');
-                body.addColorStop(1, 'rgba(255,255,255,0.16)');
-                x.beginPath(); x.arc(px, py, r, 0, Math.PI * 2); x.fillStyle = body; x.fill();
-                const rim = x.createConicGradient(b.hue, px, py);
-                const c1 = SHEEN[b.c1], c2 = SHEEN[b.c2];
-                rim.addColorStop(0, c1 + '0)'); rim.addColorStop(0.25, c1 + '0.55)');
-                rim.addColorStop(0.5, c2 + '0)'); rim.addColorStop(0.75, c2 + '0.55)');
-                rim.addColorStop(1, c1 + '0)');
-                x.lineWidth = Math.max(1, r * 0.10);
-                x.beginPath(); x.arc(px, py, r - x.lineWidth * 0.5, 0, Math.PI * 2); x.strokeStyle = rim; x.stroke();
-                x.beginPath(); x.arc(px - r * 0.32, py - r * 0.34, r * 0.18, 0, Math.PI * 2);
-                x.fillStyle = 'rgba(255,255,255,0.85)'; x.fill();
-                x.restore();
-            }
-
-            const start = performance.now();
-            const DURATION = 2700; // ms di raffica, poi sfuma (~4s totali)
-            let fading = false, done = false;
-            function frame(now) {
-                const elapsed = now - start;
-                x.clearRect(0, 0, W, H);
-                for (const b of parts) {
-                    b.y += b.vy; b.t += 0.016; b.hue += b.spin;
-                    if (b.y < -b.r - 20) { Object.assign(b, mk()); b.y = H + b.r; }
-                    drawB(b);
-                }
-                if (!fading && elapsed >= DURATION) {
-                    fading = true;
-                    intro.classList.add('hide');           // avvia la dissolvenza dolce
-                    setTimeout(() => { done = true; intro.remove(); }, 1300);
-                }
-                if (!done) requestAnimationFrame(frame);    // le bolle continuano a salire mentre svanisce
-            }
-            requestAnimationFrame(frame);
-        })();
     </script>
 </body>
 
