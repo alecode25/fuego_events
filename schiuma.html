@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- <meta http-equiv="refresh" content="0; url=chiusura.html">  -->
     <title>FUEGO — Guest List & Access</title>
     <link rel="icon" href="logo.jpg" type="image/x-icon">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Poppins:wght@500;600;700&family=Raleway:wght@300;400;600;700&display=swap"
@@ -773,6 +775,22 @@
     </div>
     <div class="toast" id="toast"></div>
 
+    <!-- ─── MODAL CONFERMA EMAIL ─── -->
+    <div id="emailConfirmModal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(5,5,7,0.88); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); align-items:center; justify-content:center; padding:20px;">
+        <div style="background:rgba(12,10,14,0.99); border:1px solid rgba(255,255,255,0.1); border-radius:24px; padding:28px 22px; max-width:360px; width:100%; text-align:center; box-shadow:0 30px 60px rgba(0,0,0,0.7);">
+            <span class="material-symbols-outlined" style="font-size:2.6rem; color:var(--primary); display:block; margin-bottom:10px;">mark_email_unread</span>
+            <h3 style="font-family:'Oswald'; font-size:1.35rem; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">Conferma Email</h3>
+            <p style="font-size:0.72rem; color:#888; line-height:1.6; margin-bottom:16px;">Invieremo il biglietto a questo indirizzo.<br>È corretto?</p>
+            <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.13); border-radius:12px; padding:13px 16px; margin-bottom:22px; word-break:break-all;">
+                <span id="emailConfirmValue" style="font-size:0.88rem; font-weight:600; color:#fff;"></span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button id="emailConfirmBack" style="flex:1; padding:14px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:12px; color:#bbb; font-family:'Oswald'; font-size:0.85rem; letter-spacing:1px; cursor:pointer; transition:background 0.2s;">MODIFICA</button>
+                <button id="emailConfirmOk" style="flex:2; padding:14px 10px; background:var(--primary); border:none; border-radius:12px; color:#fff; font-family:'Oswald'; font-size:0.95rem; letter-spacing:1px; cursor:pointer; transition:opacity 0.2s;">SÌ, INVIA</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ─── COUNTDOWN ─── -->
     <div class="countdown-banner">
         <div class="countdown-inner">
@@ -853,6 +871,16 @@
             <div style="background:rgba(20,242,12,0.15); border:1px solid #14f20c; border-radius:8px; padding:4px 9px; font-size:0.6rem; font-weight:700; color:#14f20c; white-space:nowrap; flex-shrink:0; margin-top:2px;">QR 🟢</div>
             <div>
                 <div style="font-size:0.85rem; font-weight:700; color:#fff; line-height:1.3;">PRIME 400 PERSONE - QR GRATUITO</div>
+            </div>
+        </div>
+        <!-- Barra posti verdi -->
+        <div style="margin-top:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-size:0.5rem; text-transform:uppercase; letter-spacing:2px; color:#666;">Posti occupati</span>
+                <span id="verde-count" style="font-size:0.55rem; font-weight:700; color:#14f20c; font-family:'Oswald';">— / 400</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.07); border-radius:20px; height:5px; overflow:hidden;">
+                <div id="verde-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#14f20c,#22cc66); border-radius:20px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
             </div>
         </div>
     </div>
@@ -1209,6 +1237,22 @@
         updateCountdown();
         setInterval(updateCountdown, 1000);
     </script>
+    <!-- ─── BARRA POSTI VERDI (realtime) ─── -->
+    <script>
+        async function updateVerdeBar() {
+            try {
+                const { data: count } = await db.rpc('get_verde_count');
+                const filled = Math.min(count || 0, 400);
+                const pct = (filled / 400) * 100;
+                document.getElementById('verde-bar').style.width = pct + '%';
+                document.getElementById('verde-count').textContent = filled + ' / 400';
+            } catch (e) {}
+        }
+
+        updateVerdeBar();
+        setInterval(updateVerdeBar, 5000);
+    </script>
+
     <!-- ─── INTRO · RAFFICA DI BOLLE (~2s) ─── -->
     <script>
         (function () {
