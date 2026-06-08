@@ -4,7 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-   <!-- <meta http-equiv="refresh" content="0; url=chiusura.html"> -->
+  <!--<meta http-equiv="refresh" content="0; url=chiusura.html">--> 
+  +    <script>
+        (function() {
+            var chiusura = new Date('2026-06-06T14:00:00');
+            if (new Date() >= chiusura) {
+                window.location.replace('chiusura.html');
+            }
+        })();
+    </script>
     <title>FUEGO — Guest List & Access</title>
     <link rel="icon" href="logo.jpg" type="image/x-icon">
 
@@ -856,7 +864,7 @@
                 <h2 class="form-title">Guest List</h2>
 
              
-               >
+               
 
 
                 <!-- Prezzi -->
