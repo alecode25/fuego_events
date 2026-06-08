@@ -676,7 +676,10 @@ async function loadSpotsCount() {
     document.getElementById('spotsBarFill').style.width = ((used / total) * 100) + '%';
   } catch (e) {}
 }
-document.addEventListener('DOMContentLoaded', loadSpotsCount);
+document.addEventListener('DOMContentLoaded', () => {
+  loadSpotsCount();
+  setInterval(loadSpotsCount, 5000);
+});
 </script>
 
 <!-- ─── COUNTDOWN ─── -->
