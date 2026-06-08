@@ -158,13 +158,13 @@ const FuegoApp = (() => {
                 return;
             }
 
-            const isVerde = result.tipo === 'verde';
+            const isRosa = result.tipo === 'rosa';
             const overlay = ui.reg.success;
-            overlay.querySelector('h2').textContent = isVerde ? 'QR 🟢 VERDE' : 'QR 🟣 VIOLA';
-            overlay.querySelector('p').innerHTML = isVerde
-                ? 'Sei tra i primi 400! Hai ottenuto il <b style="color:#22cc66">Biglietto Verde — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
-                : 'Hai ottenuto il <b style="color:#aa44ff">Biglietto Viola — Promo Drink</b>.<br>Controlla la tua email per il biglietto.';
-            showToast(isVerde ? '✓ Biglietto Verde — Gratuito!' : '✓ Biglietto Viola — Promo Drink', 'ok');
+            overlay.querySelector('h2').textContent = isRosa ? 'QR 🩷 ROSA' : 'QR 🟢 VERDE';
+            overlay.querySelector('p').innerHTML = isRosa
+                ? 'Sei tra le prime 300! Hai ottenuto il <b style="color:#ff4da6">Biglietto Rosa — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
+                : 'Hai ottenuto il <b style="color:#00cc66">Biglietto Verde — Promo Drink 10€</b>.<br>Controlla la tua email per il biglietto.';
+            showToast(isRosa ? '✓ Biglietto Rosa — Gratuito!' : '✓ Biglietto Verde — Promo Drink 10€', 'ok');
             overlay.style.display = 'flex';
 
         } catch (e) {
