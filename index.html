@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <!-- <meta http-equiv="refresh" content="0; url=chiusura.html"> -->
-<meta http-equiv="refresh" content="0; url=chiusura.html"> 
-  +    <script>
+<!-- <meta http-equiv="refresh" content="0; url=chiusura.html">  -->
+      <script>
         (function() {
             var chiusura = new Date('2026-06-13T14:00:00');
             if (new Date() >= chiusura) {
@@ -77,21 +77,88 @@ body {
   z-index: 0;
 }
 
-/* ─── PETALI ─── */
-.petal {
+/* ─── PETALI (anime.js) ─── */
+#petals-container {
   position: fixed;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
+}
+.petal {
+  position: absolute;
   border-radius: 50% 10% 50% 10%;
+  pointer-events: none;
   opacity: 0;
-  animation: fall linear infinite;
 }
-@keyframes fall {
-  0%   { transform: translateY(-30px) rotate(0deg);   opacity: 0; }
-  10%  { opacity: 0.35; }
-  90%  { opacity: 0.15; }
-  100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+
+/* ─── CAMERA PRELOADER ─── */
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #070305;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0;
 }
+.vf-wrap {
+  position: relative;
+  width: min(320px, 80vw);
+  height: min(320px, 80vw);
+}
+#vf-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+#vf-svg path, #vf-svg line, #vf-svg circle {
+  fill: none;
+  stroke: var(--primary-light);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#vf-circle { stroke: rgba(255,77,166,0.4); }
+#vf-scan   { stroke: var(--primary); stroke-width: 1.5; opacity: 0; }
+#vf-flash  {
+  position: fixed;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10000;
+}
+#vf-label {
+  font-family: 'Oswald';
+  font-size: 0.55rem;
+  letter-spacing: 5px;
+  color: rgba(255,77,166,0.6);
+  text-transform: uppercase;
+  opacity: 0;
+  margin-top: 8px;
+}
+#vf-logo-pre {
+  font-family: 'Oswald';
+  color: #fff;
+  text-transform: uppercase;
+  opacity: 0;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.15;
+  white-space: nowrap;
+  pointer-events: none;
+}
+#vf-logo-pre span { color: transparent; -webkit-text-stroke: 1.5px white; }
 
 /* ─── OMAGGIO BANNER ─── */
 .omaggio-banner {
@@ -101,6 +168,7 @@ body {
   margin-bottom: 14px;
   position: relative;
   z-index: 1;
+  opacity: 0;
 }
 .omaggio-inner {
   background: linear-gradient(135deg, rgba(232,0,110,0.15), rgba(255,100,170,0.06));
@@ -165,6 +233,7 @@ body {
   padding: 0 15px;
   position: relative;
   z-index: 1;
+  opacity: 0;
 }
 .countdown-inner {
   background: rgba(232,0,110,0.06);
@@ -189,7 +258,7 @@ body {
 .live-dot { display:inline-block; width:6px; height:6px; background:var(--primary-light); border-radius:50%; margin-right:6px; vertical-align:middle; animation:pulse-dot 1.5s ease-in-out infinite; }
 
 /* ─── VENUE ─── */
-.venue-badge { width:100%; max-width:420px; padding:0 15px; margin-bottom:10px; position:relative; z-index:1; }
+.venue-badge { width:100%; max-width:420px; padding:0 15px; margin-bottom:10px; position:relative; z-index:1; opacity:0; }
 .venue-inner {
   background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
@@ -210,7 +279,7 @@ body {
 .venue-info em { display:block; font-style:normal; font-size:0.65rem; color:#888; margin-top:1px; }
 
 /* ─── CARD ─── */
-.scene { width:100%; max-width:420px; perspective:1500px; padding:0 15px; position:relative; z-index:1; }
+.scene { width:100%; max-width:420px; perspective:1500px; padding:0 15px; position:relative; z-index:1; opacity:0; }
 .card { position:relative; width:100%; transition:var(--transition); transform-style:preserve-3d; }
 .card.is-flipped { transform:rotateY(180deg); }
 
@@ -445,19 +514,46 @@ input:not([type="checkbox"]):focus {
 </head>
 <body>
 
+<!-- ─── CAMERA PRELOADER ─── -->
+<div id="preloader">
+  <div class="vf-wrap">
+    <svg id="vf-svg" viewBox="0 0 320 320">
+      <!-- Corner brackets -->
+      <path id="vf-tl" d="M75,22 L22,22 L22,75"   stroke-dasharray="100" stroke-dashoffset="100"/>
+      <path id="vf-tr" d="M245,22 L298,22 L298,75" stroke-dasharray="100" stroke-dashoffset="100"/>
+      <path id="vf-bl" d="M75,298 L22,298 L22,245" stroke-dasharray="100" stroke-dashoffset="100"/>
+      <path id="vf-br" d="M245,298 L298,298 L298,245" stroke-dasharray="100" stroke-dashoffset="100"/>
+      <!-- Center crosshair -->
+      <line id="vf-ch" x1="143" y1="160" x2="177" y2="160" stroke-dasharray="34" stroke-dashoffset="34"/>
+      <line id="vf-cv" x1="160" y1="143" x2="160" y2="177" stroke-dasharray="34" stroke-dashoffset="34"/>
+      <!-- Outer thin circle (iris) -->
+      <circle id="vf-circle" cx="160" cy="160" r="70" stroke-dasharray="440" stroke-dashoffset="440"/>
+      <!-- Scan line -->
+      <line id="vf-scan" x1="22" y1="22" x2="298" y2="22"/>
+      <!-- Corner dots -->
+      <circle cx="22"  cy="22"  r="3" id="vf-d1" style="fill:var(--primary-light);stroke:none;opacity:0"/>
+      <circle cx="298" cy="22"  r="3" id="vf-d2" style="fill:var(--primary-light);stroke:none;opacity:0"/>
+      <circle cx="22"  cy="298" r="3" id="vf-d3" style="fill:var(--primary-light);stroke:none;opacity:0"/>
+      <circle cx="298" cy="298" r="3" id="vf-d4" style="fill:var(--primary-light);stroke:none;opacity:0"/>
+    </svg>
+    <div id="vf-logo-pre">
+      <img src="logo1.png" alt="FUEGO" style="width:160px;height:auto;display:block;margin-bottom:4px;">
+      <div style="font-size:1.4rem;color:var(--primary-light);letter-spacing:3px;margin:2px 0;">×</div>
+      <div style="font-size:1.3rem;letter-spacing:5px;font-family:'Oswald';font-weight:400;color:#fff;text-transform:uppercase;">MOJITO BEACH</div>
+      <div style="font-size:0.7rem;letter-spacing:8px;font-family:'Oswald';color:rgba(255,77,166,0.5);margin-top:6px;">2026</div>
+    </div>
+  </div>
+  <div id="vf-label">GUEST LIST · RICCIONE</div>
+</div>
+<div id="vf-flash"></div>
+
 <div class="ambient-bg"></div>
 <div class="noise"></div>
+<div id="petals-container"></div>
 <div class="toast" id="toast"></div>
 
-<!-- Petali -->
-<div class="petal" style="left:8%;width:10px;height:14px;background:#ff4da6;animation-duration:7s;animation-delay:0s;"></div>
-<div class="petal" style="left:25%;width:8px;height:11px;background:#e8006e;animation-duration:9s;animation-delay:1.5s;"></div>
-<div class="petal" style="left:55%;width:12px;height:16px;background:#ff80c0;animation-duration:8s;animation-delay:3s;"></div>
-<div class="petal" style="left:75%;width:7px;height:10px;background:#ff4da6;animation-duration:6.5s;animation-delay:0.8s;"></div>
-<div class="petal" style="left:90%;width:9px;height:13px;background:#e8006e;animation-duration:10s;animation-delay:4s;"></div>
-
 <!-- ─── OMAGGIO ─── -->
-<div class="omaggio-banner">
+<div class="omaggio-banner" id="omaggio-banner">
   <div class="omaggio-inner">
     <div class="omaggio-icon">🌸</div>
     <div class="omaggio-text">
@@ -470,7 +566,7 @@ input:not([type="checkbox"]):focus {
 </div>
 
 <!-- ─── COUNTDOWN ─── -->
-<div class="countdown-banner">
+<div class="countdown-banner" id="countdown-banner">
   <div class="countdown-inner">
     <div class="countdown-label"><span class="live-dot"></span>L'evento inizia tra</div>
     <div class="countdown-units">
@@ -498,7 +594,7 @@ input:not([type="checkbox"]):focus {
 </div>
 
 <!-- ─── VENUE ─── -->
-<div class="venue-badge">
+<div class="venue-badge" id="venue-badge">
   <a href="https://maps.app.goo.gl/yyCAfcJeJihTyDaf6" target="_blank" rel="noopener" style="text-decoration:none;display:block;">
     <div class="venue-inner venue-clickable">
       <span class="venue-icon">🍹</span>
@@ -513,14 +609,16 @@ input:not([type="checkbox"]):focus {
 </div>
 
 <!-- ─── CARD ─── -->
-<div class="scene">
+<div class="scene" id="scene">
   <div class="card" id="mainCard">
 
     <!-- FRONT: REGISTRAZIONE -->
     <div class="card-face card-front">
       <div class="brand">
         <p>Official Event</p>
-        <img src="logo1.png" alt="Logo" class="logo">
+        <span class="logo-wrap">
+          <img src="logo1.png" alt="Logo" class="logo" id="logo-img">
+        </span>
       </div>
 
       <h2 class="form-title">Guest List</h2>
@@ -657,6 +755,8 @@ input:not([type="checkbox"]):focus {
   </div>
 </div>
 
+<!-- anime.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
@@ -673,7 +773,12 @@ async function loadSpotsCount() {
     const total = 300;
     const used  = Math.min(count || 0, total);
     document.getElementById('spotsCount').textContent = used;
-    document.getElementById('spotsBarFill').style.width = ((used / total) * 100) + '%';
+    anime({
+      targets: '#spotsBarFill',
+      width: ((used / total) * 100) + '%',
+      duration: 1200,
+      easing: 'easeOutElastic(1, .6)'
+    });
   } catch (e) {}
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -703,6 +808,285 @@ function updateCountdown() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
+</script>
+
+<!-- ─── CAMERA PRELOADER ANIMATION ─── -->
+<script>
+(function() {
+  document.addEventListener('DOMContentLoaded', () => {
+    const tl = anime.timeline({ autoplay: true });
+
+    tl.add({
+      targets: ['#vf-d1','#vf-d2','#vf-d3','#vf-d4'],
+      opacity: [0, 1],
+      scale: [0, 1],
+      delay: anime.stagger(80),
+      duration: 200,
+      easing: 'easeOutBack'
+    })
+    .add({
+      targets: ['#vf-tl','#vf-tr','#vf-bl','#vf-br'],
+      strokeDashoffset: [100, 0],
+      delay: anime.stagger(60),
+      duration: 380,
+      easing: 'easeOutQuad'
+    }, '-=100')
+    .add({
+      targets: '#vf-circle',
+      strokeDashoffset: [440, 0],
+      duration: 600,
+      easing: 'easeInOutQuad'
+    }, '-=200')
+    .add({
+      targets: '#vf-scan',
+      opacity: [0, 0.7],
+      translateY: [0, 276],
+      duration: 700,
+      easing: 'easeInOutSine',
+      begin: () => {
+        const s = document.getElementById('vf-scan');
+        s.style.opacity = '0.7';
+      }
+    }, '-=100')
+    .add({
+      targets: '#vf-scan',
+      opacity: 0,
+      duration: 200,
+      easing: 'linear'
+    })
+    .add({
+      targets: ['#vf-ch','#vf-cv'],
+      strokeDashoffset: [34, 0],
+      delay: anime.stagger(80),
+      duration: 250,
+      easing: 'easeOutQuad'
+    }, '-=100')
+    .add({
+      targets: '#vf-logo-pre',
+      opacity: [0, 1],
+      scale: [0.6, 1],
+      duration: 400,
+      easing: 'easeOutElastic(1, .6)'
+    }, '-=100')
+    .add({
+      targets: '#vf-label',
+      opacity: [0, 1],
+      translateY: [8, 0],
+      duration: 300,
+      easing: 'easeOutQuad'
+    }, '-=200')
+    .add({ duration: 420 })
+    .add({
+      targets: ['#vf-tl','#vf-tr','#vf-bl','#vf-br'],
+      scale: [1, 0],
+      opacity: [1, 0],
+      delay: anime.stagger(40),
+      duration: 280,
+      easing: 'easeInQuad'
+    })
+    .add({
+      targets: ['#vf-circle','#vf-ch','#vf-cv','#vf-logo-pre','#vf-label','#vf-d1','#vf-d2','#vf-d3','#vf-d4'],
+      scale: [1, 1.08],
+      opacity: [null, 0],
+      duration: 220,
+      easing: 'easeInQuad'
+    }, '-=200')
+    .add({
+      targets: '#vf-flash',
+      opacity: [0, 0.85, 0],
+      duration: 300,
+      easing: 'easeOutExpo'
+    }, '-=100')
+    .add({
+      targets: '#preloader',
+      opacity: [1, 0],
+      duration: 350,
+      easing: 'easeInQuad',
+      complete: () => {
+        document.getElementById('preloader').style.display = 'none';
+      }
+    }, '-=100');
+  });
+})();
+</script>
+
+<!-- ─── ANIME.JS ─── -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ── 1. PETALI REALISTICI ──────────────────────────────────────
+  const petalColors = ['#ff4da6','#e8006e','#ff80c0','#ffb3d9','#ff3399'];
+  const container   = document.getElementById('petals-container');
+
+  function spawnPetal() {
+    const el = document.createElement('div');
+    el.className = 'petal';
+    const size = 6 + Math.random() * 10;
+    el.style.cssText = [
+      `width:${size}px`,
+      `height:${size * 1.4}px`,
+      `background:${petalColors[Math.floor(Math.random() * petalColors.length)]}`,
+      `left:${Math.random() * 110 - 5}%`,
+      `top:-20px`,
+      `opacity:0`
+    ].join(';');
+    container.appendChild(el);
+
+    const duration  = 7000 + Math.random() * 7000;
+    const swayX     = (Math.random() - 0.5) * 180;
+    const rotDeg    = (Math.random() - 0.5) * 720;
+
+    anime({
+      targets: el,
+      translateY: [0, window.innerHeight + 40],
+      translateX: [0, swayX],
+      rotate: [0, rotDeg],
+      opacity: [
+        { value: 0,    duration: 0 },
+        { value: 0.4,  duration: duration * 0.08, easing: 'linear' },
+        { value: 0.18, duration: duration * 0.82, easing: 'linear' },
+        { value: 0,    duration: duration * 0.10, easing: 'linear' }
+      ],
+      duration,
+      easing: 'linear',
+      complete: () => { el.remove(); spawnPetal(); }
+    });
+  }
+
+  for (let i = 0; i < 15; i++) {
+    setTimeout(spawnPetal, Math.random() * 6000);
+  }
+
+  // ── 2. INTRO TIMELINE ────────────────────────────────────────
+  const tl = anime.timeline({ easing: 'easeOutElastic(1, .75)', duration: 700 });
+
+  tl
+    .add({
+      targets: '#logo-img',
+      scale: [0, 1],
+      opacity: [0, 1],
+      duration: 900,
+      easing: 'spring(1, 80, 12, 0)'
+    })
+    .add({
+      targets: '#omaggio-banner',
+      translateY: [-50, 0],
+      opacity: [0, 1],
+      duration: 650
+    }, '-=400')
+    .add({
+      targets: '#countdown-banner',
+      translateY: [-35, 0],
+      opacity: [0, 1],
+      duration: 600
+    }, '-=450')
+    .add({
+      targets: '#venue-badge',
+      translateY: [-25, 0],
+      opacity: [0, 1],
+      duration: 550
+    }, '-=400')
+    .add({
+      targets: '#scene',
+      scale: [0.88, 1],
+      opacity: [0, 1],
+      duration: 800,
+      easing: 'spring(1, 70, 10, 0)'
+    }, '-=350')
+    .add({
+      targets: '.card-front .field',
+      translateX: [-20, 0],
+      opacity: [0, 1],
+      duration: 400,
+      delay: anime.stagger(60),
+      easing: 'easeOutQuad'
+    }, '-=500');
+
+  // ── 3. BUTTON GLOW PULSE ──────────────────────────────────────
+  anime({
+    targets: '#regSubmitBtn',
+    boxShadow: [
+      '0 8px 24px rgba(232,0,110,0.35)',
+      '0 8px 42px rgba(232,0,110,0.75)'
+    ],
+    direction: 'alternate',
+    loop: true,
+    duration: 1600,
+    easing: 'easeInOutSine'
+  });
+
+  // ── 4. BADGE QR PINK PULSE ────────────────────────────────────
+  anime({
+    targets: '.qr-badge-pink',
+    borderColor: [
+      'rgba(255,105,180,0.55)',
+      'rgba(255,105,180,1)'
+    ],
+    boxShadow: [
+      '0 0 0px rgba(255,105,180,0)',
+      '0 0 10px rgba(255,105,180,0.6)'
+    ],
+    direction: 'alternate',
+    loop: true,
+    duration: 1800,
+    easing: 'easeInOutSine'
+  });
+
+  // ── 5. CARD HOVER TILT 3D ────────────────────────────────────
+  const scene    = document.getElementById('scene');
+  const mainCard = document.getElementById('mainCard');
+  let tiltActive = true;
+
+  scene.addEventListener('mousemove', (e) => {
+    if (!tiltActive) return;
+    const rect   = scene.getBoundingClientRect();
+    const cx     = rect.left + rect.width / 2;
+    const cy     = rect.top  + rect.height / 2;
+    const dx     = (e.clientX - cx) / (rect.width  / 2);
+    const dy     = (e.clientY - cy) / (rect.height / 2);
+    anime({
+      targets: mainCard,
+      rotateY: dx * 6,
+      rotateX: -dy * 4,
+      duration: 300,
+      easing: 'easeOutQuad'
+    });
+  });
+
+  scene.addEventListener('mouseleave', () => {
+    anime({
+      targets: mainCard,
+      rotateY: 0,
+      rotateX: 0,
+      duration: 600,
+      easing: 'easeOutElastic(1, .5)'
+    });
+  });
+
+  window.flipCard = () => {
+    tiltActive = false;
+    mainCard.classList.toggle('is-flipped');
+    setTimeout(() => { tiltActive = true; }, 900);
+  };
+
+  // ── 6. SUCCESS OVERLAY ENTRANCE ──────────────────────────────
+  const origObserver = new MutationObserver(() => {
+    const overlay = document.getElementById('regSuccess');
+    if (overlay && overlay.style.display === 'flex') {
+      anime({
+        targets: overlay.children,
+        scale:   [0.5, 1],
+        opacity: [0, 1],
+        delay:   anime.stagger(80),
+        duration: 500,
+        easing:  'spring(1, 80, 10, 0)'
+      });
+    }
+  });
+  const regSuccess = document.getElementById('regSuccess');
+  if (regSuccess) origObserver.observe(regSuccess, { attributes: true, attributeFilter: ['style'] });
+
+});
 </script>
 
 </body>
