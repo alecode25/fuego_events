@@ -1032,41 +1032,11 @@ document.addEventListener('DOMContentLoaded', () => {
     easing: 'easeInOutSine'
   });
 
-  // ── 5. CARD HOVER TILT 3D ────────────────────────────────────
-  const scene    = document.getElementById('scene');
+  // ── 5. CARD FLIP ─────────────────────────────────────────────
   const mainCard = document.getElementById('mainCard');
-  let tiltActive = true;
-
-  scene.addEventListener('mousemove', (e) => {
-    if (!tiltActive) return;
-    const rect   = scene.getBoundingClientRect();
-    const cx     = rect.left + rect.width / 2;
-    const cy     = rect.top  + rect.height / 2;
-    const dx     = (e.clientX - cx) / (rect.width  / 2);
-    const dy     = (e.clientY - cy) / (rect.height / 2);
-    anime({
-      targets: mainCard,
-      rotateY: dx * 6,
-      rotateX: -dy * 4,
-      duration: 300,
-      easing: 'easeOutQuad'
-    });
-  });
-
-  scene.addEventListener('mouseleave', () => {
-    anime({
-      targets: mainCard,
-      rotateY: 0,
-      rotateX: 0,
-      duration: 600,
-      easing: 'easeOutElastic(1, .5)'
-    });
-  });
 
   window.flipCard = () => {
-    tiltActive = false;
     mainCard.classList.toggle('is-flipped');
-    setTimeout(() => { tiltActive = true; }, 900);
   };
 
   // ── 6. SUCCESS OVERLAY ENTRANCE ──────────────────────────────
