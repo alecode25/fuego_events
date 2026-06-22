@@ -1,8 +1,8 @@
 // =============================================
 // SUPABASE CONFIG
 // =============================================
-const SUPABASE_URL  = 'https://amrcywgsouszukzisxwe.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtcmN5d2dzb3VzenVremlzeHdlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc5OTAsImV4cCI6MjA4ODQyMzk5MH0.cfE0AJAFRoZIcEhEBUbWutXhzgJIwMlotnaSvmslt8M';
+const SUPABASE_URL  = '__SUPABASE_URL__';
+const SUPABASE_ANON = '__SUPABASE_ANON__';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
     auth: {
         persistSession:     false,
