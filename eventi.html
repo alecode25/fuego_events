@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FUEGO — Prossimamente</title>
+<link rel="icon" href="logo.jpg" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #04020a;
+  color: #fff;
+  font-family: 'Raleway', sans-serif;
+  user-select: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── ATMOSPHERE ── */
+.bg-aura {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 65% 45% at 50% 50%, rgba(255,46,0,0.09) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: aura 5s ease-in-out infinite;
+}
+@keyframes aura {
+  0%,100% { transform:scale(1);   opacity:0.7; }
+  50%      { transform:scale(1.2); opacity:1;   }
+}
+
+.noise {
+  position: fixed;
+  inset: 0;
+  background: url('https://grainy-gradients.vercel.app/noise.svg');
+  opacity: 0.13;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.9) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* scanlines */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── SCENE ── */
+.scene {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(28px, 5vh, 58px);
+  opacity: 0;
+}
+
+/* ── EYES ── */
+.eyes-row {
+  display: flex;
+  gap: clamp(28px, 7vw, 88px);
+  align-items: center;
+}
+
+.eye-wrap {
+  position: relative;
+}
+
+.eye-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150%;
+  height: 230%;
+  background: radial-gradient(ellipse at center, rgba(255,46,0,0.32) 0%, transparent 70%);
+  filter: blur(22px);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: glow 3.5s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,100% { opacity:0.45; transform:translate(-50%,-50%) scale(0.88); }
+  50%      { opacity:1;    transform:translate(-50%,-50%) scale(1.12); }
+}
+
+.eye-svg {
+  display: block;
+  filter: drop-shadow(0 0 14px rgba(255,46,0,0.55));
+  width: clamp(130px, 26vw, 215px);
+  height: auto;
+}
+
+/* transform-origin for blink scaleY (fill-box so 50% 50% = center of group) */
+#eye-content-l,
+#eye-content-r {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+/* ── TEXT ── */
+.text-block {
+  text-align: center;
+  opacity: 0;
+}
+
+.t-label {
+  font-size: clamp(0.65rem, 1.8vw, 0.8rem);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,100,50,0.85);
+  margin-bottom: 16px;
+  font-weight: 600;
+  animation: label-flicker 4s ease-in-out infinite;
+}
+@keyframes label-flicker {
+  0%,90%,100% { opacity:1; }
+  92%          { opacity:0.4; }
+  94%          { opacity:1; }
+  96%          { opacity:0.6; }
+}
+
+.t-title {
+  font-family: 'Oswald';
+  font-size: clamp(3rem, 10vw, 6rem);
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(255,46,0,0.4);
+}
+
+.t-title .outline {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,0.55);
+}
+
+.t-sub {
+  font-size: clamp(0.6rem, 1.4vw, 0.72rem);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-top: 16px;
+  font-weight: 400;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-aura"></div>
+<div class="noise"></div>
+<div class="vignette"></div>
+
+<div class="scene" id="scene">
+
+  <div class="eyes-row">
+
+    <!-- LEFT EYE -->
+    <div class="eye-wrap">
+      <div class="eye-glow"></div>
+      <svg class="eye-svg" id="eye-l" viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <defs>
+          <clipPath id="clip-l">
+            <path d="M5,55 C55,2 165,2 215,55 C165,108 55,108 5,55Z"/>
+          </clipPath>
+          <radialGradient id="ig-l" cx="42%" cy="36%" r="60%">
+            <stop offset="0%"   stop-color="#ff7700"/>
+            <stop offset="28%"  stop-color="#dd2000"/>
+            <stop offset="62%"  stop-color="#8b0000"/>
+            <stop offset="100%" stop-color="#330000"/>
+          </radialGradient>
+          <radialGradient id="pg-l" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#160010"/>
+            <stop offset="100%" stop-color="#030010"/>
+          </radialGradient>
+        </defs>
+
+        <g id="eye-content-l" clip-path="url(#clip-l)">
+          <!-- sclera -->
+          <ellipse cx="110" cy="55" rx="107" ry="51" fill="#eee9e2"/>
+          <!-- veins -->
+          <path d="M26,55 Q52,42 78,53"  stroke="rgba(210,80,80,0.28)" stroke-width="1"   fill="none"/>
+          <path d="M194,55 Q168,47 148,54" stroke="rgba(210,80,80,0.22)" stroke-width="0.8" fill="none"/>
+          <path d="M48,63 Q66,73 82,65"  stroke="rgba(210,80,80,0.17)" stroke-width="0.8" fill="none"/>
+          <!-- iris -->
+          <circle id="iris-l"       cx="110" cy="55" r="34" fill="url(#ig-l)"/>
+          <circle id="iris-ring-l"  cx="110" cy="55" r="34" fill="none" stroke="rgba(255,130,0,0.22)" stroke-width="2.5"/>
+          <circle id="iris-inner-l" cx="110" cy="55" r="26" fill="none" stroke="rgba(180,50,0,0.14)"  stroke-width="1.5"/>
+          <!-- pupil -->
+          <circle id="pupil-l"      cx="110" cy="55" r="18" fill="url(#pg-l)"/>
+          <circle id="pupil-ring-l" cx="110" cy="55" r="18" fill="none" stroke="rgba(0,0,8,0.92)" stroke-width="2"/>
+          <!-- reflections -->
+          <circle id="refl-l1" cx="100" cy="44" r="5.5" fill="white" opacity="0.9"/>
+          <circle id="refl-l2" cx="119" cy="50" r="2.5" fill="white" opacity="0.38"/>
+        </g>
+
+        <!-- outline -->
+        <path d="M5,55 C55,2 165,2 215,55 C165,108 55,108 5,55Z" fill="none" stroke="rgba(60,18,5,0.65)" stroke-width="1.5"/>
+        <!-- lash top (thick) -->
+        <path d="M5,55 C55,2 165,2 215,55" fill="none" stroke="#04020a" stroke-width="6.5" stroke-linecap="round"/>
+        <!-- lash bottom (thin) -->
+        <path d="M5,55 C55,108 165,108 215,55" fill="none" stroke="#04020a" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- RIGHT EYE -->
+    <div class="eye-wrap">
+      <div class="eye-glow"></div>
+      <svg class="eye-svg" id="eye-r" viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <defs>
+          <clipPath id="clip-r">
+            <path d="M5,55 C55,2 165,2 215,55 C165,108 55,108 5,55Z"/>
+          </clipPath>
+          <radialGradient id="ig-r" cx="42%" cy="36%" r="60%">
+            <stop offset="0%"   stop-color="#ff7700"/>
+            <stop offset="28%"  stop-color="#dd2000"/>
+            <stop offset="62%"  stop-color="#8b0000"/>
+            <stop offset="100%" stop-color="#330000"/>
+          </radialGradient>
+          <radialGradient id="pg-r" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#160010"/>
+            <stop offset="100%" stop-color="#030010"/>
+          </radialGradient>
+        </defs>
+
+        <g id="eye-content-r" clip-path="url(#clip-r)">
+          <ellipse cx="110" cy="55" rx="107" ry="51" fill="#eee9e2"/>
+          <path d="M26,55 Q52,42 78,53"  stroke="rgba(210,80,80,0.28)" stroke-width="1"   fill="none"/>
+          <path d="M194,55 Q168,47 148,54" stroke="rgba(210,80,80,0.22)" stroke-width="0.8" fill="none"/>
+          <path d="M48,63 Q66,73 82,65"  stroke="rgba(210,80,80,0.17)" stroke-width="0.8" fill="none"/>
+          <circle id="iris-r"       cx="110" cy="55" r="34" fill="url(#ig-r)"/>
+          <circle id="iris-ring-r"  cx="110" cy="55" r="34" fill="none" stroke="rgba(255,130,0,0.22)" stroke-width="2.5"/>
+          <circle id="iris-inner-r" cx="110" cy="55" r="26" fill="none" stroke="rgba(180,50,0,0.14)"  stroke-width="1.5"/>
+          <circle id="pupil-r"      cx="110" cy="55" r="18" fill="url(#pg-r)"/>
+          <circle id="pupil-ring-r" cx="110" cy="55" r="18" fill="none" stroke="rgba(0,0,8,0.92)" stroke-width="2"/>
+          <circle id="refl-r1" cx="100" cy="44" r="5.5" fill="white" opacity="0.9"/>
+          <circle id="refl-r2" cx="119" cy="50" r="2.5" fill="white" opacity="0.38"/>
+        </g>
+
+        <path d="M5,55 C55,2 165,2 215,55 C165,108 55,108 5,55Z" fill="none" stroke="rgba(60,18,5,0.65)" stroke-width="1.5"/>
+        <path d="M5,55 C55,2 165,2 215,55" fill="none" stroke="#04020a" stroke-width="6.5" stroke-linecap="round"/>
+        <path d="M5,55 C55,108 165,108 215,55" fill="none" stroke="#04020a" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+  </div>
+
+  <div class="text-block" id="text-block">
+    <div class="t-label">Qualcosa sta per succedere</div>
+    <div class="t-title">FUEGO <span class="outline">×</span></div>
+    <div class="t-sub">Prossimamente · Riccione 2026</div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const CX = 110, CY = 55;
+  const I_FOLLOW = 0.34;
+  const LERP     = 0.09;
+
+  const $ = id => document.getElementById(id);
+  const E = {
+    l: { content:$('eye-content-l'), iris:[$('iris-l'),$('iris-ring-l'),$('iris-inner-l')], pupil:$('pupil-l'), pring:$('pupil-ring-l'), refls:[$('refl-l1'),$('refl-l2')] },
+    r: { content:$('eye-content-r'), iris:[$('iris-r'),$('iris-ring-r'),$('iris-inner-r')], pupil:$('pupil-r'), pring:$('pupil-ring-r'), refls:[$('refl-r1'),$('refl-r2')] },
+  };
+  const REFL_OFF = [{dx:-10,dy:-11},{dx:9,dy:-5}];
+
+  const s = { lx:CX, ly:CY, rx:CX, ry:CY, tlx:CX, tly:CY, trx:CX, try:CY };
+  let isBlinking = false;
+
+  function applyEye(e, px, py) {
+    const iox=(px-CX)*I_FOLLOW, ioy=(py-CY)*I_FOLLOW;
+    e.iris.forEach(el => { el.setAttribute('cx',CX+iox); el.setAttribute('cy',CY+ioy); });
+    e.pupil.setAttribute('cx',px); e.pupil.setAttribute('cy',py);
+    e.pring.setAttribute('cx',px); e.pring.setAttribute('cy',py);
+    REFL_OFF.forEach((o,i) => { if(e.refls[i]){ e.refls[i].setAttribute('cx',px+o.dx); e.refls[i].setAttribute('cy',py+o.dy); } });
+  }
+
+  function loop() {
+    s.lx += (s.tlx-s.lx)*LERP; s.ly += (s.tly-s.ly)*LERP;
+    s.rx += (s.trx-s.rx)*LERP; s.ry += (s.try-s.ry)*LERP;
+    if (!isBlinking) { applyEye(E.l,s.lx,s.ly); applyEye(E.r,s.rx,s.ry); }
+    requestAnimationFrame(loop);
+  }
+
+  // ── Primitives ───────────────────────────────────────────────
+  function setTarget(ox,oy) { s.tlx=s.trx=CX+ox; s.tly=s.try=CY+oy; }
+
+  function moveTo(ox,oy,dur,ease,cb) {
+    const p={x:s.tlx-CX, y:s.tly-CY};
+    anime({targets:p, x:ox, y:oy, duration:dur, easing:ease||'easeOutQuad',
+      update:()=>setTarget(p.x,p.y), complete:cb||(()=>{})});
+  }
+
+  function dilate(r,dur) {
+    [E.l.pupil,E.r.pupil,E.l.pring,E.r.pring].forEach(el=>
+      anime({targets:el, r, duration:dur||400, easing:'easeOutQuad'}));
+  }
+
+  function squint(scale,dur) {
+    anime({targets:[E.l.content,E.r.content], scaleY:scale, duration:dur||300, easing:'easeOutQuad'});
+  }
+
+  function singleBlink(cb) {
+    if (isBlinking){cb&&cb();return;}
+    isBlinking=true;
+    anime({targets:[E.l.content,E.r.content], scaleY:[1,0.04,1], duration:200,
+      easing:'easeInOutSine', delay:anime.stagger(18),
+      complete:()=>{isBlinking=false; cb&&cb();}});
+  }
+
+  // ── BEHAVIORS ────────────────────────────────────────────────
+
+  // Shifty: guarda sinistra → destra → centro (chi sorveglia la stanza)
+  function bShifty(cb) {
+    moveTo(-20,0,110,'easeOutQuad',()=>
+      setTimeout(()=>moveTo(20,0,140,'easeOutQuad',()=>
+        setTimeout(()=>moveTo(0,0,220,'easeInOutQuad',cb),
+          350+Math.random()*400)),
+        280+Math.random()*450));
+  }
+
+  // Sospettoso: striscia lenta verso un lato, lunga pausa, scatta via
+  function bSuspicious(cb) {
+    const side=Math.random()<0.5?-22:22;
+    squint(0.85,500);
+    moveTo(side,2,950,'easeInSine',()=>
+      setTimeout(()=>{
+        moveTo(0,0,110,'easeInQuad',()=>{squint(1,250);cb();});
+      },1400+Math.random()*900));
+  }
+
+  // Doppio sguardo: dart, snap, dart ancora (nervoso, non riesce a smettere di guardare)
+  function bDoubleTake(cb) {
+    const ox=Math.random()<0.5?-18:18;
+    moveTo(ox,0,75,'easeOutQuad',()=>
+      setTimeout(()=>moveTo(0,0,70,'easeInQuad',()=>
+        setTimeout(()=>moveTo(ox,0,75,'easeOutQuad',()=>
+          setTimeout(()=>moveTo(0,0,200,'easeInOutQuad',cb),
+            500+Math.random()*400)),
+          100)),
+        180));
+  }
+
+  // Occhi spalancati: pupille si dilatano, fissa dritto (shock/rivelazione imminente)
+  function bWideEyed(cb) {
+    setTarget(0,0);
+    dilate(26,260);
+    setTimeout(()=>{dilate(18,600);setTimeout(cb,900+Math.random()*500);},1200+Math.random()*600);
+  }
+
+  // Blink nervosi multipli (agitazione)
+  function bNervousBlinks(cb) {
+    const n=2+Math.floor(Math.random()*2);
+    let done=0;
+    function next(){singleBlink(()=>{done++; done<n?setTimeout(next,60+Math.random()*70):setTimeout(cb,200);});}
+    next();
+  }
+
+  // Abbassare: occhi scendono in basso come chi nasconde qualcosa
+  function bDowncast(cb) {
+    moveTo(0,13,700,'easeInOutSine',()=>
+      setTimeout(()=>moveTo(0,0,400,'easeInOutQuad',cb),700+Math.random()*600));
+  }
+
+  // Su: occhi salgono come chi ricorda/calcola qualcosa di segreto
+  function bGlanceUp(cb) {
+    moveTo(0,-13,550,'easeInOutSine',()=>
+      setTimeout(()=>moveTo(0,0,320,'easeInOutQuad',cb),500+Math.random()*500));
+  }
+
+  // Side-eye estremo: angolo assoluto, sguardo fisso di traverso
+  function bSideEye(cb) {
+    const ox=Math.random()<0.5?-22:22;
+    squint(0.78,350);
+    moveTo(ox,3,180,'easeOutQuad',()=>{
+      dilate(14,300);
+      setTimeout(()=>{
+        moveTo(0,0,130,'easeInQuad',()=>{squint(1,220);dilate(18,320);setTimeout(cb,120);});
+      },1700+Math.random()*1000);
+    });
+  }
+
+  // Fissa dritto: intenso, pupille si restringono (sa qualcosa)
+  function bIntenseStare(cb) {
+    moveTo(0,0,300,'easeOutQuad',()=>{
+      dilate(12,350);
+      setTimeout(()=>{dilate(18,500);setTimeout(cb,700+Math.random()*400);},1100+Math.random()*500);
+    });
+  }
+
+  // Diagonale: angolo in basso-lato (cospirazione)
+  function bDiagonal(cb) {
+    const dirs=[[-16,-9],[16,-9],[-16,9],[16,9]];
+    const d=dirs[Math.floor(Math.random()*dirs.length)];
+    moveTo(d[0],d[1],450,'easeInOutSine',()=>
+      setTimeout(()=>moveTo(0,0,280,'easeInOutQuad',cb),650+Math.random()*600));
+  }
+
+  // Scan: studia la stanza lentamente da sinistra a destra
+  function bScan(cb) {
+    moveTo(-20,0,350,'easeInOutSine',()=>
+      setTimeout(()=>moveTo(20,0,750,'easeInOutSine',()=>
+        setTimeout(()=>moveTo(0,0,300,'easeInOutQuad',cb),300)),
+        380));
+  }
+
+  // Micro-scatto: tremito involontario, non riesce a stare fermo
+  function bTwitch(cb) {
+    const ox=(Math.random()-0.5)*9, oy=(Math.random()-0.5)*5;
+    moveTo(ox,oy,55,'easeOutQuad',()=>
+      setTimeout(()=>moveTo(0,0,120,'easeInOutQuad',cb),70));
+  }
+
+  // ── POOL PESATO ───────────────────────────────────────────────
+  const POOL=[
+    {fn:bShifty,       w:3},
+    {fn:bSuspicious,   w:2},
+    {fn:bDoubleTake,   w:2},
+    {fn:bWideEyed,     w:1},
+    {fn:bNervousBlinks,w:2},
+    {fn:bDowncast,     w:1},
+    {fn:bGlanceUp,     w:2},
+    {fn:bSideEye,      w:2},
+    {fn:bIntenseStare, w:1},
+    {fn:bDiagonal,     w:2},
+    {fn:bScan,         w:1},
+    {fn:bTwitch,       w:2},
+  ];
+  const TW=POOL.reduce((a,b)=>a+b.w,0);
+
+  let lastFn=null;
+  function pick(){let r=Math.random()*TW; for(const b of POOL){r-=b.w;if(r<=0)return b.fn;} return POOL[0].fn;}
+
+  function runNext() {
+    let fn; do{fn=pick();}while(fn===lastFn);
+    lastFn=fn;
+    const gap=200+Math.random()*900;
+    if(Math.random()<0.25){
+      setTimeout(()=>singleBlink(()=>setTimeout(()=>fn(runNext),gap*0.4)),gap*0.6);
+    } else {
+      setTimeout(()=>fn(runNext),gap);
+    }
+  }
+
+  // ── OPENING ──────────────────────────────────────────────────
+  function open() {
+    anime({targets:'#scene',opacity:[0,1],duration:300});
+    anime({
+      targets:[E.l.content,E.r.content], scaleY:[0,1], duration:900,
+      delay:anime.stagger(160), easing:'easeOutElastic(1, 0.5)',
+      complete:()=>{
+        dilate(4,200);
+        setTimeout(()=>{
+          dilate(18,650);
+          anime({targets:'#text-block',opacity:[0,1],translateY:[20,0],duration:1000,delay:100,easing:'easeOutQuad'});
+          setTimeout(runNext,1400);
+        },350);
+      },
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{requestAnimationFrame(loop);setTimeout(open,380);});
+})();
+</script>
+</body>
+</html>
