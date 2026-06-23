@@ -160,11 +160,12 @@ const FuegoApp = (() => {
 
             const isRosa = result.tipo === 'rosa';
             const overlay = ui.reg.success;
-            overlay.querySelector('h2').textContent = isRosa ? 'QR 🩷 ROSA' : 'QR 🟢 VERDE';
+            overlay.querySelector('h2').textContent = isRosa ? 'QR 🩷 ROSA' : 'QR 🟡 ORO';
             overlay.querySelector('p').innerHTML = isRosa
-                ? 'Sei tra le prime 300! Hai ottenuto il <b style="color:#ff4da6">Biglietto Rosa — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
-                : 'Hai ottenuto il <b style="color:#00cc66">Biglietto Verde — Promo Drink 10€</b>.<br>Controlla la tua email per il biglietto.';
-            showToast(isRosa ? '✓ Biglietto Rosa — Gratuito!' : '✓ Biglietto Verde — Promo Drink 10€', 'ok');
+                ? 'Sei tra le prime! Hai ottenuto il <b style="color:#ff4da6">Biglietto Rosa — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
+                : 'Hai ottenuto il <b style="color:#f0b429">Biglietto Oro — Promo Drink 10€</b>.<br>Controlla la tua email per il biglietto.';
+            showToast(isRosa ? '✓ Biglietto Rosa — Gratuito!' : '✓ Biglietto Oro — Promo Drink 10€', 'ok');
+            loadTicketCount();
             overlay.style.display = 'flex';
 
         } catch (e) {
@@ -172,6 +173,28 @@ const FuegoApp = (() => {
             ui.reg.btn.disabled = false;
             ui.reg.btn.innerHTML = '<span>ENTRA IN LISTA</span><span class="material-symbols-outlined">bolt</span>';
         }
+    }
+
+    // =============================================
+    // CONTATORE TICKET
+    // =============================================
+    async function loadTicketCount() {
+        try {
+            const { data, error } = await db.rpc('get_ticket_count');
+            if (error || !data) return;
+            const count = data.count || 0;
+            const max = 400;
+            const remaining = Math.max(0, max - count);
+            const pct = Math.min(100, (count / max) * 100);
+            const bar = document.getElementById('ticket-bar');
+            const label = document.getElementById('ticket-remaining');
+            if (bar) bar.style.width = pct + '%';
+            if (label) {
+                label.textContent = remaining + ' / ' + max;
+                if (remaining <= 50) label.style.color = '#ff4444';
+                else if (remaining <= 100) label.style.color = '#ff8800';
+            }
+        } catch (e) {}
     }
 
     // =============================================
@@ -235,6 +258,7 @@ const FuegoApp = (() => {
     return {
         init: () => {
             window.flipCard = () => ui.card.classList.toggle('is-flipped');
+            loadTicketCount();
 
             // Toggle password
             ui.login.togglePass.addEventListener('click', () => {
