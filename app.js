@@ -163,8 +163,8 @@ const FuegoApp = (() => {
             overlay.querySelector('h2').textContent = isRosa ? 'QR 🩷 ROSA' : 'QR 🟡 ORO';
             overlay.querySelector('p').innerHTML = isRosa
                 ? 'Sei tra le prime! Hai ottenuto il <b style="color:#ff4da6">Biglietto Rosa — Gratuito</b>.<br>Controlla la tua email per il biglietto.'
-                : 'Hai ottenuto il <b style="color:#f0b429">Biglietto Oro — Promo Drink 10€</b>.<br>Controlla la tua email per il biglietto.';
-            showToast(isRosa ? '✓ Biglietto Rosa — Gratuito!' : '✓ Biglietto Oro — Promo Drink 10€', 'ok');
+                : 'Hai ottenuto il <b style="color:#f0b429">Biglietto Oro — Promo Donne</b>.<br>Controlla la tua email per il biglietto.';
+            showToast(isRosa ? '✓ Biglietto Rosa — Gratuito!' : '✓ Biglietto Oro — Promo Donne ', 'ok');
             loadTicketCount();
             overlay.style.display = 'flex';
 
