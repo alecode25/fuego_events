@@ -183,7 +183,7 @@ const FuegoApp = (() => {
             const { data, error } = await db.rpc('get_ticket_count');
             if (error || !data) return;
             const count = data.count || 0;
-            const max = 400;
+            const max = 200;
             const remaining = Math.max(0, max - count);
             const pct = Math.min(100, (count / max) * 100);
             const bar = document.getElementById('ticket-bar');
