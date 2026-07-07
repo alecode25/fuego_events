@@ -2,15 +2,17 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=chiusura.html">
-      <!-- <script>
+<!-- <meta http-equiv="refresh" content="0; url=chiusura.html"> -->
+      <script>
         (function() {
-            var chiusura = new Date('2026-06-26T14:00:00');
-            if (new Date() >= chiusura) {
+            var chiusura   = new Date('2026-07-07T14:00:00');
+            var riapertura = new Date('2026-07-07T21:00:00');
+            var now = new Date();
+            if (now >= chiusura && now < riapertura) {
                 window.location.replace('chiusura.html');
             }
         })();
-    </script> -->
+    </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>FUEGO — Guest List & Access</title>
 <link rel="icon" href="logo.jpg" type="image/x-icon">

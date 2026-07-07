@@ -3,6 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        (function() {
+            var riapertura = new Date('2026-07-07T21:00:00');
+            function checkRiapertura() {
+                if (new Date() >= riapertura) {
+                    window.location.replace('index.html');
+                }
+            }
+            checkRiapertura();
+            setInterval(checkRiapertura, 30000);
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FUEGO — Registrazioni Chiuse</title>
     <link rel="icon" href="logo.jpg" type="image/x-icon">
