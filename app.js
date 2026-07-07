@@ -184,15 +184,15 @@ const FuegoApp = (() => {
             if (error || !data) return;
             const count = data.count || 0;
             const max = 200;
-            const remaining = Math.max(0, max - count);
+            const filled = Math.min(count, max);
             const pct = Math.min(100, (count / max) * 100);
             const bar = document.getElementById('ticket-bar');
             const label = document.getElementById('ticket-remaining');
             if (bar) bar.style.width = pct + '%';
             if (label) {
-                label.textContent = remaining + ' / ' + max;
-                if (remaining <= 50) label.style.color = '#ff4444';
-                else if (remaining <= 100) label.style.color = '#ff8800';
+                label.textContent = filled + ' / ' + max;
+                if (filled >= 200) label.style.color = '#ff4444';
+                else if (filled >= 150) label.style.color = '#ff8800';
             }
         } catch (e) {}
     }
